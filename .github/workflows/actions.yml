@@ -3,7 +3,7 @@ name: Backend server actions
 on:
   push:
     branches:
-      - '**'
+    - '*'
 
 jobs:
   build:
@@ -21,9 +21,9 @@ jobs:
     name: Check code lint with checkstyle
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dbelyaev/action-checkstyle@master
-        with:
-          reporter: github-pr-check
-          level: error
-          fail_on_error: true
+    - uses: actions/checkout@v4
+    - uses: dbelyaev/action-checkstyle@master
+      with:
+        reporter: github-pr-check
+        level: error
+        fail_on_error: true
