@@ -1,0 +1,31 @@
+name: Count lines of code
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  count-loc:
+    name: Count lines of code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+
+    - name: Setup nix
+      uses: cachix/install-nix-action@v27
+
+    - name: Count lines of code
+      uses: workflow/nix-shell-action@v3
+      with:
+        packages: scc
+        script: |
+          scc > lines_of_code.txt
+
+    - name: Upload lines of code artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lines_of_code
+        path: lines_of_code.txt
+        retention-days: 30
