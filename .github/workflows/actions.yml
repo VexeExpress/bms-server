@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Backend server actions
 
 on:
   push:
@@ -15,3 +15,14 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+  lint:
+    name: Check code lint with checkstyle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dbelyaev/action-checkstyle@master
+        with:
+          reporter: github-pr-check
+          level: error
+          fail_on_error: true
