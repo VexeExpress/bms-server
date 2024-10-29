@@ -115,4 +115,14 @@ public class EmployeeService {
         responseDTO.setBirthDate(employee.getBirthDate());
         return responseDTO;
     }
+
+    public void lockAccountEmployee(Long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            throw new IllegalArgumentException("Nhân viên không tồn tại.");
+        }
+        Employee employee = optionalEmployee.get();
+        employee.setStatus(false);
+        employeeRepository.save(employee);
+    }
 }

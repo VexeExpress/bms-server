@@ -95,6 +95,24 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
+    // UC_EM_04: Khóa tài khoản nhân viên
+    @PostMapping("/lock/{id}")
+    public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
+        }
+        try {
+            if (!employeeService.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
+            }
+            employeeService.lockAccountEmployee(id);
+            return ResponseEntity.noContent().build(); // 204: Khóa thành công
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
 
 
 
