@@ -36,22 +36,22 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
-        // Data import UC_EM_01 {
-        //    "username": "dangtuanthanh",
-        //    "password": "12345678",
-        //    "status": true,
-        //    "fullName": "Đặng Tuấn Thành",
-        //    "phoneNumber": "0397892603",
-        //    "address": "123 Main Street, HCM City",
-        //    "email": "john.doe@example.com",
-        //    "idCard": "123456789",
-        //    "gender": true,
-        //    "birthDate": "1990-01-01",
-        //    "role": 1,
-        //    "licenseCategory": 2,
-        //    "expirationDate": "2025-01-01",
-        //    "companyId": 1
-        //}
+//         Data import UC_EM_01 {
+//            "username": "dangtuanthanh",
+//            "password": "12345678",
+//            "status": true,
+//            "fullName": "Đặng Tuấn Thành",
+//            "phoneNumber": "0397892603",
+//            "address": "123 Main Street, HCM City",
+//            "email": "john.doe@example.com",
+//            "idCard": "123456789",
+//            "gender": true,
+//            "birthDate": "1990-01-01",
+//            "role": 1,
+//            "licenseCategory": 2,
+//            "expirationDate": "2025-01-01",
+//            "companyId": 1
+//        }
     }
 
     // UC_EM_02: Xóa nhân viên
@@ -70,6 +70,34 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
+
+    // UC_EM_03: Cập nhật thông tin nhân viên
+    @PutMapping("/update/{id}")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee (@PathVariable Long id, @RequestBody EmployeeRequestDTO dto) {
+        if (id == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: Dữ liệu vào không hợp lệ
+        }
+        if (dto.getUsername() == null || dto.getUsername().isEmpty() ||
+                dto.getFullName() == null || dto.getFullName().isEmpty() ||
+                dto.getRole() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: Dữ liệu vào không hợp lệ
+        }
+        if (!employeeService.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: User không tồn tại
+        }
+        try {
+            // Cập nhật thông tin nhân viên
+            EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(id, dto);
+            return ResponseEntity.ok(updatedEmployee); // 200: Cap nhat thanh cong
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // 400: Du lieu vao khong hop le
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
+        }
+    }
+
+
+
 
 
 

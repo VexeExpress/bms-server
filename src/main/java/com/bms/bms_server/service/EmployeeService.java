@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class EmployeeService {
     @Autowired
@@ -71,5 +73,46 @@ public class EmployeeService {
 
     public void deleteEmployeeById(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO dto) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            throw new IllegalArgumentException("Nhân viên không tồn tại.");
+        }
+        Employee existingEmployee = optionalEmployee.get();
+        existingEmployee.setUsername(dto.getUsername());
+        existingEmployee.setFullName(dto.getFullName());
+        existingEmployee.setRole(dto.getRole());
+        existingEmployee.setPhoneNumber(dto.getPhoneNumber());
+        existingEmployee.setAddress(dto.getAddress());
+        existingEmployee.setEmail(dto.getEmail());
+        existingEmployee.setIdCard(dto.getIdCard());
+        existingEmployee.setGender(dto.getGender());
+        existingEmployee.setBirthDate(dto.getBirthDate());
+        existingEmployee.setStatus(dto.getStatus());
+        existingEmployee.setExpirationDate(dto.getExpirationDate());
+        existingEmployee.setLicenseCategory(dto.getLicenseCategory());
+
+        Employee updatedEmployee = employeeRepository.save(existingEmployee);
+        return convertToResponseDTO(updatedEmployee);
+    }
+
+    private EmployeeResponseDTO convertToResponseDTO(Employee employee) {
+        EmployeeResponseDTO responseDTO = new EmployeeResponseDTO();
+        responseDTO.setId(employee.getId());
+        responseDTO.setUsername(employee.getUsername());
+        responseDTO.setFullName(employee.getFullName());
+        responseDTO.setPhoneNumber(employee.getPhoneNumber());
+        responseDTO.setEmail(employee.getEmail());
+        responseDTO.setRole(employee.getRole());
+        responseDTO.setAddress(employee.getAddress());
+        responseDTO.setStatus(employee.getStatus());
+        responseDTO.setGender(employee.getGender());
+        responseDTO.setIdCard(employee.getIdCard());
+        responseDTO.setLicenseCategory(employee.getLicenseCategory());
+        responseDTO.setExpirationDate(employee.getExpirationDate());
+        responseDTO.setBirthDate(employee.getBirthDate());
+        return responseDTO;
     }
 }
