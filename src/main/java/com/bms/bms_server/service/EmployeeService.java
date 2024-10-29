@@ -64,4 +64,12 @@ public class EmployeeService {
     public boolean usernameExists(String username, Long companyId) {
         return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
     }
+
+    public boolean existsById(Long id) {
+        return employeeRepository.existsById(id);
+    }
+
+    public void deleteEmployeeById(Long id) {
+        employeeRepository.deleteById(id);
+    }
 }
