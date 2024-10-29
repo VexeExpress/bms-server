@@ -2,11 +2,14 @@ package com.bms.bms_server.controller;
 
 import com.bms.bms_server.dto.Employee.request.EmployeeRequestDTO;
 import com.bms.bms_server.dto.Employee.response.EmployeeResponseDTO;
+import com.bms.bms_server.entity.Employee;
 import com.bms.bms_server.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -134,6 +137,26 @@ public class EmployeeController {
     }
 
     // UC_EM_06: Tìm kiếm nhân viên theo “tên” - Ở FE xử lý được thì BE không cần làm
+
+    // UC_EM_07: Lọc nhân viên theo “vai trò” - Ở FE xử lý được thì BE không cần làm
+
+    // UC_EM_08: Lấy danh sách nhân viên dựa vào ID của công ty
+    @GetMapping("/list-employee/{companyId}")
+    public ResponseEntity<List<EmployeeResponseDTO>> getEmployeesByCompanyId(@PathVariable Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID công ty không hợp lệ
+        }
+        try {
+            List<EmployeeResponseDTO> employees = employeeService.getEmployeesByCompanyId(companyId);
+            if (employees.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không có nhân viên nào thuộc công ty
+            }
+            return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+
 
 
 

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -134,5 +136,26 @@ public class EmployeeService {
         Employee employee = optionalEmployee.get();
         employee.setPassword(passwordEncoder.encode("12345678"));
         employeeRepository.save(employee);
+    }
+
+    public List<EmployeeResponseDTO> getEmployeesByCompanyId(Long companyId) {
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+    private EmployeeResponseDTO  convertToDto(Employee employee) {
+        EmployeeResponseDTO dto = new EmployeeResponseDTO();
+        dto.setId(employee.getId());
+        dto.setUsername(employee.getUsername());
+        dto.setStatus(employee.getStatus());
+        dto.setFullName(employee.getFullName());
+        dto.setPhoneNumber(employee.getPhoneNumber());
+        dto.setAddress(employee.getAddress());
+        dto.setEmail(employee.getEmail());
+        dto.setIdCard(employee.getIdCard());
+        dto.setGender(employee.getGender());
+        dto.setBirthDate(employee.getBirthDate());
+        dto.setLicenseCategory(employee.getLicenseCategory());
+        dto.setExpirationDate(employee.getExpirationDate());
+        return dto;
     }
 }
