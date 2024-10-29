@@ -86,7 +86,6 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: User không tồn tại
         }
         try {
-            // Cập nhật thông tin nhân viên
             EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(id, dto);
             return ResponseEntity.ok(updatedEmployee); // 200: Cap nhat thanh cong
         } catch (IllegalArgumentException e) {
@@ -95,6 +94,7 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
+
     // UC_EM_04: Khóa tài khoản nhân viên
     @PostMapping("/lock/{id}")
     public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
@@ -113,6 +113,31 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
+
+    // UC_EM_05: Đặt lại mật khẩu mặc định “12345678”
+    @PostMapping("/change-pass/{id}")
+    public ResponseEntity<Void> changePassAccountEmployee (@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
+        }
+        try {
+            if (!employeeService.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
+            }
+            employeeService.changePassAccountEmployee(id);
+            return ResponseEntity.noContent().build(); // 204: Thay đổi mật khẩu thành công
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+
+    // UC_EM_06: Tìm kiếm nhân viên theo “tên” - Ở FE xử lý được thì BE không cần làm
+
+
+
+
 
 
 

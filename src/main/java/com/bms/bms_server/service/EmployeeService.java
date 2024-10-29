@@ -125,4 +125,14 @@ public class EmployeeService {
         employee.setStatus(false);
         employeeRepository.save(employee);
     }
+
+    public void changePassAccountEmployee(Long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            throw new IllegalArgumentException("Nhân viên không tồn tại.");
+        }
+        Employee employee = optionalEmployee.get();
+        employee.setPassword(passwordEncoder.encode("12345678"));
+        employeeRepository.save(employee);
+    }
 }
