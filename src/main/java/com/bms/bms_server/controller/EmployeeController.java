@@ -21,7 +21,6 @@ public class EmployeeController {
     // UC_EM_01: Thêm nhân viên mới
     @PostMapping("/create")
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody EmployeeRequestDTO dto){
-        System.out.println(dto);
         if (dto.getUsername() == null || dto.getUsername().isEmpty() ||
                 dto.getFullName() == null || dto.getFullName().isEmpty() ||
                 dto.getPassword() == null || dto.getPassword().isEmpty() ||
@@ -39,22 +38,6 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
-//         Data import UC_EM_01 {
-//            "username": "dangtuanthanh",
-//            "password": "12345678",
-//            "status": true,
-//            "fullName": "Đặng Tuấn Thành",
-//            "phoneNumber": "0397892603",
-//            "address": "123 Main Street, HCM City",
-//            "email": "john.doe@example.com",
-//            "idCard": "123456789",
-//            "gender": true,
-//            "birthDate": "1990-01-01",
-//            "role": 1,
-//            "licenseCategory": 2,
-//            "expirationDate": "2025-01-01",
-//            "companyId": 1
-//        }
     }
 
     // UC_EM_02: Xóa nhân viên
@@ -87,6 +70,9 @@ public class EmployeeController {
         }
         if (!employeeService.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: User không tồn tại
+        }
+        if (employeeService.isUsernameTakenInCompanyByAnotherEmployee(id, dto.getUsername(), dto.getCompanyId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409: Tên người dùng đã tồn tại trong công ty
         }
         try {
             EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(id, dto);

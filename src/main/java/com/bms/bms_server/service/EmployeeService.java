@@ -158,4 +158,9 @@ public class EmployeeService {
         dto.setExpirationDate(employee.getExpirationDate());
         return dto;
     }
+
+
+    public boolean isUsernameTakenInCompanyByAnotherEmployee(Long id, String username, Long companyId) {
+        return employeeRepository.existsByUsernameAndCompanyIdAndIdNot(username, companyId, id);
+    }
 }
