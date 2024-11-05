@@ -4,19 +4,17 @@ import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-public class EmployeeRequestDTO {
+public class CreateEmployeeDTO {
     private String username;
     private String password;
-    private Boolean status;
     private String fullName;
-    private String phoneNumber;
-    private String address;
-    private String email;
-    private String idCard;
-    private Boolean gender;
+    private String phone;
+    private LocalDate startDate;
     private LocalDate birthDate;
+    private Integer gender;
+    private String email;
+    private String address;
+    private Integer status;
     private Integer role;
-    private Integer licenseCategory;
-    private LocalDate expirationDate;
     private Long companyId;
 }

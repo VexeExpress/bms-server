@@ -24,38 +24,32 @@ public class Employee {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "status")
-    private Boolean status; // Trạng thái tài khoản
-
-    @Column(name = "full_name", length = 100)
+    @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "phone_number", length = 13)
-    private String phoneNumber;
+    @Column(name = "phone")
+    private String phone;
 
-    @Column(name = "address", length = 255)
-    private String address;
+    @Column(name = "startDate")
+    private LocalDate startDate;
 
-    @Column(name = "email", length = 255)
-    private String email;
-
-    @Column(name = "id_card", length = 30)
-    private String idCard; // Căn cước công dân
-
-    @Column(name = "gender")
-    private Boolean gender; // true = Nam, false = Nữ
-
-    @Column(name = "birth_date")
+    @Column(name = "birthDate")
     private LocalDate birthDate;
 
+    @Column(name = "gender")
+    private Integer gender;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "status")
+    private Integer status;
+
     @Column(name = "role")
-    private Integer role; //1(Tài xế) // 2(Nhân viên hành chính) // 3(Quản Trị Viên)
-
-    @Column(name = "license_category")
-    private Integer licenseCategory; // Loại bằng lái
-
-    @Column(name = "expiration_date")
-    private LocalDate expirationDate; // Ngày hết hạn bằng lái
+    private Integer role;
 
     @Column(name = "created_at")
     @CreationTimestamp
