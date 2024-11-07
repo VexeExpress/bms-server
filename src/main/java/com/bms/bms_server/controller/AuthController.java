@@ -1,5 +1,6 @@
 package com.bms.bms_server.controller;
 
+import com.bms.bms_server.dto.Auth.LoginHistoryResponseDTO;
 import com.bms.bms_server.dto.Auth.LoginRequestDTO;
 import com.bms.bms_server.dto.Auth.LoginResponseDTO;
 import com.bms.bms_server.exception.AccountLockedException;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,6 +42,15 @@ public class AuthController {
         } catch (CompanyLockedException e) {
             return ResponseEntity.status(HttpStatus.LOCKED).build(); // 423: Công ty bị khoá
         } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+    @GetMapping("/login-history/{companyId}")
+    public ResponseEntity<List<LoginHistoryResponseDTO>> loginHistory(@PathVariable Long companyId) {
+        try {
+            List<LoginHistoryResponseDTO> loginHistories = authService.getLoginHistoryByCompanyId(companyId);
+            return ResponseEntity.ok(loginHistories);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }

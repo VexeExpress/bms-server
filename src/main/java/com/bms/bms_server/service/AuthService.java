@@ -1,5 +1,6 @@
 package com.bms.bms_server.service;
 
+import com.bms.bms_server.dto.Auth.LoginHistoryResponseDTO;
 import com.bms.bms_server.dto.Auth.LoginRequestDTO;
 import com.bms.bms_server.dto.Auth.LoginResponseDTO;
 import com.bms.bms_server.entity.Employee;
@@ -8,6 +9,7 @@ import com.bms.bms_server.exception.AccountLockedException;
 import com.bms.bms_server.exception.CompanyLockedException;
 import com.bms.bms_server.exception.InvalidPasswordException;
 import com.bms.bms_server.exception.UserNotFoundException;
+import com.bms.bms_server.mapper.LoginHistoryMapper;
 import com.bms.bms_server.repository.EmployeeRepository;
 import com.bms.bms_server.repository.LoginHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -66,5 +70,13 @@ public class AuthService {
         loginHistory.setTimeLogin(LocalTime.now());
         loginHistory.setDateLogin(LocalDate.now());
         loginHistoryRepository.save(loginHistory);
+    }
+
+    public List<LoginHistoryResponseDTO> getLoginHistoryByCompanyId(Long companyId) {
+        List<LoginHistory> loginHistories = loginHistoryRepository.findByCompanyId(companyId);
+
+        return loginHistories.stream()
+                .map(LoginHistoryMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
