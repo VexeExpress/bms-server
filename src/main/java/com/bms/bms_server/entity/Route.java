@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "router")
+@Table(name = "route")
 @Data
-public class Router {
+public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,8 +15,8 @@ public class Router {
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private Company company;
 
-    @Column(name = "router_name")
-    private String routerName;
+    @Column(name = "route_name")
+    private String routeName;
 
     @Column(name = "route_name_short")
     private String routeNameShort;
@@ -25,7 +25,7 @@ public class Router {
     private Double displayPrice;
 
     @Column(name = "status")
-    private Boolean status;
+    private Integer status;
 
     @Column(name = "note")
     private String note;
