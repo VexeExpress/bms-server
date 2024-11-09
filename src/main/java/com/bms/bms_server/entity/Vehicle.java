@@ -2,6 +2,7 @@ package com.bms.bms_server.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.Internal;
 
 import java.time.LocalDate;
 
@@ -20,31 +21,28 @@ public class Vehicle {
     @Column(name = "license_plate")
     private String licensePlate; // Biển số xe
 
+    @Column(name = "note")
+    private String note;
+
     @Column(name = "phone")
-    private String phone; // So dien thoai xe
+    private String phone;
 
-    @Column(name = "color")
-    private String color; // Màu xe
-
-    @Column(name = "brand")
-    private String brand; // Hãng xe
-
-    @Column(name = "chassis_number")
-    private String chassisNumber; // Số khung
-
-    @Column(name = "engine_number")
-    private String engineNumber; // Số máy
-
-    @Column(name = "type")
-    private Integer type; // 1: Giường nằm, 2: Ghế ngồi, 3: Ghế ngồi limousine, 4: Giuờng nằm limousine, 5: Phòng VIP (Cabin)
-
-    @Column(name = "number_of_seat")
-    private Integer numberOfSeat; // Số lượng ghế
+    @Column(name = "typeVehicle")
+    private Integer typeVehicle; // 1: Giường nằm, 2: Ghế ngồi, 3: Ghế ngồi limousine, 4: Giuờng nằm limousine, 5: Phòng VIP (Cabin)
 
     @Column(name = "registration_period")
     private LocalDate registrationPeriod; // Hạn đăng kiểm
 
-    @Column(name = "insurance_period")
-    private LocalDate insurancePeriod; // Hạn bảo hiểm
+    @Column(name = "status")
+    private Integer status;
+
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "maintenance_period")
+    private LocalDate maintenancePeriod; // Hạn bảo dưỡng
+
+    @Column(name = "brand")
+    private Integer brand; // Hãng xe
 
 }

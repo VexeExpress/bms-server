@@ -1,13 +1,18 @@
 package com.bms.bms_server.service;
 
-import com.bms.bms_server.dto.Vehicle.request.VehicleRequestDTO;
-import com.bms.bms_server.dto.Vehicle.response.VehicleResponseDTO;
+import com.bms.bms_server.dto.Vehicle.VehicleRequestDTO;
+import com.bms.bms_server.dto.Vehicle.VehicleResponseDTO;
 import com.bms.bms_server.entity.Company;
 import com.bms.bms_server.entity.Vehicle;
+import com.bms.bms_server.mapper.VehicleMapper;
 import com.bms.bms_server.repository.CompanyRepository;
 import com.bms.bms_server.repository.VehicleRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VehicleService {
@@ -16,42 +21,49 @@ public class VehicleService {
     @Autowired
     CompanyRepository companyRepository;
 
-    public boolean licensePlateExists(String licensePlate, Long companyId) {
-        return vehicleRepository.existsByLicensePlateAndCompanyId(licensePlate, companyId);
-    }
 
     public VehicleResponseDTO createVehicle(VehicleRequestDTO dto) {
-        Company company = companyRepository.findById(dto.getCompanyId()).orElseThrow(() -> new IllegalArgumentException("Company not found"));
-        Vehicle newVehicle = new Vehicle();
-        newVehicle.setLicensePlate(dto.getLicensePlate());
-        newVehicle.setPhone(dto.getPhone());
-        newVehicle.setColor(dto.getColor());
-        newVehicle.setBrand(dto.getBrand());
-        newVehicle.setChassisNumber(dto.getChassisNumber());
-        newVehicle.setEngineNumber(dto.getEngineNumber());
-        newVehicle.setType(dto.getType());
-        newVehicle.setNumberOfSeat(dto.getNumberOfSeat());
-        newVehicle.setRegistrationPeriod(dto.getRegistrationPeriod());
-        newVehicle.setInsurancePeriod(dto.getInsurancePeriod());
-        newVehicle.setCompany(company);
-
-        Vehicle savedVehicle = vehicleRepository.save(newVehicle);
-        return mapToResponseDTO(savedVehicle);
+        if (dto.getCompanyId() == null) {
+            throw new IllegalArgumentException("Company ID is required.");
+        }
+        if (dto.getLicensePlate() == null || dto.getLicensePlate().trim().isEmpty()) {
+            throw new IllegalArgumentException("Vehicle name is required.");
+        }
+        Company company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new EntityNotFoundException("Company not found."));
+        boolean exists = vehicleRepository.existsByCompanyAndLicensePlate(company, dto.getLicensePlate());
+        if (exists) {
+            throw new IllegalArgumentException("LicensePlate already exists for this company.");
+        }
+        Vehicle vehicle = VehicleMapper.toEntity(dto, company);
+        Vehicle saved = vehicleRepository.save(vehicle);
+        return VehicleMapper.toResponseDTO(saved);
     }
 
-    private VehicleResponseDTO mapToResponseDTO(Vehicle savedVehicle) {
-        VehicleResponseDTO dto = new VehicleResponseDTO();
-        dto.setId(savedVehicle.getId());
-        dto.setLicensePlate(savedVehicle.getLicensePlate());
-        dto.setPhone(savedVehicle.getPhone());
-        dto.setColor(savedVehicle.getColor());
-        dto.setBrand(savedVehicle.getBrand());
-        dto.setChassisNumber(savedVehicle.getChassisNumber());
-        dto.setEngineNumber(savedVehicle.getEngineNumber());
-        dto.setType(savedVehicle.getType());
-        dto.setNumberOfSeat(savedVehicle.getNumberOfSeat());
-        dto.setRegistrationPeriod(savedVehicle.getRegistrationPeriod());
-        dto.setInsurancePeriod(savedVehicle.getInsurancePeriod());
-        return dto;
+    public List<VehicleResponseDTO> getListVehicleByCompanyId(Long companyId) {
+        List<Vehicle> vehicles = vehicleRepository.findByCompanyId(companyId);
+        return vehicles.stream().map(VehicleMapper::toResponseDTO).collect(Collectors.toList());
+    }
+
+    public VehicleResponseDTO updateVehicle(Long vehicleId, VehicleRequestDTO updatedData) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new EntityNotFoundException("Vehicle with ID " + vehicleId + " not found"));
+        if (updatedData.getLicensePlate() != null) {
+            vehicle.setLicensePlate(updatedData.getLicensePlate());
+            vehicle.setNote(updatedData.getNote());
+            vehicle.setPhone(updatedData.getPhone());
+            vehicle.setTypeVehicle(updatedData.getTypeVehicle());
+            vehicle.setRegistrationPeriod(updatedData.getRegistrationPeriod());
+            vehicle.setStatus(updatedData.getStatus());
+            vehicle.setColor(updatedData.getColor());
+            vehicle.setMaintenancePeriod(updatedData.getMaintenancePeriod());
+            vehicle.setBrand(updatedData.getBrand());
+        }
+        Vehicle updateVehicle = vehicleRepository.save(vehicle);
+        return VehicleMapper.toResponseDTO(updateVehicle);
+    }
+
+    public void deleteVehicleById(Long vehicleId) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new EntityNotFoundException("Phương tiện không tồn tại"));
+        vehicleRepository.delete(vehicle);
     }
 }
