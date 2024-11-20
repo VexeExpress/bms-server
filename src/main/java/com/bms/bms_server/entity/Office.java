@@ -18,10 +18,19 @@ public class Office {
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private Company company;
 
-    @Column(name = "officeName")
+    @Column(name = "office_name")
     private String officeName;
 
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDate createdAt;
+    @Column(name = "office_code")
+    private String officeCode;
+
+    @Column(name = "status")
+    private Boolean status;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address")
+    private String address;
+
 }

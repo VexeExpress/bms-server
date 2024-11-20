@@ -31,6 +31,7 @@ public class EmployeeService {
 
     @Transactional
     public void createEmployee(CreateEmployeeDTO dto) {
+        System.out.println(dto);
         Company company = companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new IllegalArgumentException("Company not found"));
 
@@ -47,16 +48,17 @@ public class EmployeeService {
     }
 
     public void deleteEmployeeById(Long id) {
+        System.out.println("Delete Employee ID: " + id);
         employeeRepository.deleteById(id);
     }
+
     public EmployeeDTO updateEmployee(Long id, EditEmployeeDTO dto) {
+        System.out.println("Update Employee ID: " + id);
+        System.out.println("Update Employee: " + dto);
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
 
-        // Cập nhật thông tin từ DTO vào entity
-        employee.setUsername(dto.getUsername());
         employee.setFullName(dto.getFullName());
-        employee.setPhone(dto.getPhone());
         employee.setStartDate(dto.getStartDate());
         employee.setBirthDate(dto.getBirthDate());
         employee.setGender(dto.getGender());
@@ -64,6 +66,10 @@ public class EmployeeService {
         employee.setAddress(dto.getAddress());
         employee.setStatus(dto.getStatus());
         employee.setRole(dto.getRole());
+        employee.setPhone(dto.getPhone());
+        employee.setAccessTms(dto.getAccessTms());
+        employee.setAccessCms(dto.getAccessCms());
+        employee.setAccessBms(dto.getAccessBms());
 
         // Lưu cập nhật vào cơ sở dữ liệu
         employeeRepository.save(employee);
@@ -72,16 +78,18 @@ public class EmployeeService {
         return EmployeeMapper.toDTO(employee);
     }
     public void lockAccountEmployee(Long id) {
+        System.out.println("Lock Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
             throw new IllegalArgumentException("Nhân viên không tồn tại.");
         }
         Employee employee = optionalEmployee.get();
-        employee.setStatus(2);
+        employee.setStatus(false);
         employeeRepository.save(employee);
     }
 
     public void changePassAccountEmployee(Long id) {
+        System.out.println("Change Pass Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
             throw new IllegalArgumentException("Nhân viên không tồn tại.");
@@ -97,20 +105,19 @@ public class EmployeeService {
                 .map(EmployeeMapper::toDTO)
                 .collect(Collectors.toList());
     }
-//    private EmployeeResponseDTO  convertToDto(Employee employee) {
-//        EmployeeResponseDTO dto = new EmployeeResponseDTO();
-//        dto.setId(employee.getId());
-//        dto.setUsername(employee.getUsername());
-//        dto.setStatus(employee.getStatus());
-//        dto.setFullName(employee.getFullName());
-//        dto.setPhoneNumber(employee.getPhoneNumber());
-//        dto.setAddress(employee.getAddress());
-//        dto.setEmail(employee.getEmail());
-//        dto.setIdCard(employee.getIdCard());
-//        dto.setGender(employee.getGender());
-//        dto.setBirthDate(employee.getBirthDate());
-//        dto.setLicenseCategory(employee.getLicenseCategory());
-//        dto.setExpirationDate(employee.getExpirationDate());
-//        return dto;
-//    }
+
+
+    public List<EmployeeDTO> searchEmployeesByName(String fullName, Long companyId) {
+        List<Employee> employees = employeeRepository.findByFullNameContainingAndCompanyId(fullName, companyId);
+        return employees.stream()
+                .map(EmployeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeDTO> searchEmployeesByRole(Integer role, Long companyId) {
+        List<Employee> employees = employeeRepository.findByRoleAndCompanyId(role, companyId);
+        return employees.stream()
+                .map(EmployeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

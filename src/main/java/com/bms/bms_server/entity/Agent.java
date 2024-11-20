@@ -19,10 +19,10 @@ public class Agent {
     private Company company;
 
     @Column(name = "name")
-    private String name;
+    private String name; // Tên đại lý
 
     @Column(name = "code")
-    private String code;
+    private String code; // Mã đại lý
 
     @Column(name = "phone")
     private String phone;
@@ -34,13 +34,13 @@ public class Agent {
     private String address;
 
     @Column(name = "discount_ticket_type")
-    private Integer discountTicketType;
+    private Integer discountTicketType; // 1: Tính theo %, // 2: Tính theo VND
 
     @Column(name = "discount_ticket")
     private Double discountTicket;
 
     @Column(name = "discount_goods_type")
-    private Integer discountGoodsType;
+    private Integer discountGoodsType; // 1: Tính theo %, // 2: Tính theo VND
 
     @Column(name = "discount_goods")
     private Double discountGoods;

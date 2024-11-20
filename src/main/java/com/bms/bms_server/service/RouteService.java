@@ -35,13 +35,15 @@ public class RouteService {
         if (exists) {
             throw new IllegalArgumentException("RouteName already exists for this company.");
         }
+        Integer maxDisplayOrder = routeRepository.findMaxDisplayOrderByCompany(company).orElse(0);
         Route route = RouteMapper.toEntity(dto, company);
+        route.setDisplayOrder(maxDisplayOrder + 1);
         Route saved = routeRepository.save(route);
         return RouteMapper.toDTO(saved);
     }
 
     public List<RouteResponseDTO> getListRouteByCompanyId(Long companyId) {
-        List<Route> routes = routeRepository.findByCompanyId(companyId);
+        List<Route> routes = routeRepository.findByCompanyIdOrderByDisplayOrderAsc(companyId);
         return routes.stream().map(RouteMapper::toDTO).collect(Collectors.toList());
     }
 
@@ -61,5 +63,30 @@ public class RouteService {
     public void deleteRouteById(Long routeId) {
         Route route = routeRepository.findById(routeId).orElseThrow(() -> new EntityNotFoundException("Tuyen không tồn tại"));
         routeRepository.delete(route);
+    }
+
+    public void moveRouteToTop(Long routeId) {
+        Route route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new EntityNotFoundException("Route with ID " + routeId + " not found."));
+
+        Long companyId = route.getCompany().getId();
+        int currentOrder = route.getDisplayOrder();
+
+        // Nếu đã ở vị trí cao nhất, không thể di chuyển lên nữa
+        if (currentOrder == 1) {
+            throw new IllegalArgumentException("Route is already at the top of the list.");
+        }
+
+        // Tìm tuyến có `displayOrder` liền trước trong cùng công ty
+        Route previousRoute = routeRepository
+                .findByCompanyIdAndDisplayOrder(companyId, currentOrder - 1)
+                .orElseThrow(() -> new IllegalStateException("Inconsistent displayOrder sequence."));
+
+        // Hoán đổi displayOrder của hai tuyến
+        previousRoute.setDisplayOrder(currentOrder);
+        route.setDisplayOrder(currentOrder - 1);
+
+        routeRepository.save(previousRoute);
+        routeRepository.save(route);
     }
 }

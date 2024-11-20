@@ -75,4 +75,20 @@ public class RouteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
+
+    @PostMapping("/move-order/{routeId}")
+    public ResponseEntity<Void> moveRouteToTop(@PathVariable Long routeId) {
+        try {
+            routeService.moveRouteToTop(routeId);
+            return ResponseEntity.ok().build(); // 200
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500
+        }
+    }
+
+
 }

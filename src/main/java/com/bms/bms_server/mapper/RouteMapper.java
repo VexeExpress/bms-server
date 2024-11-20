@@ -24,6 +24,7 @@ public class RouteMapper {
         dto.setDisplayPrice(route.getDisplayPrice());
         dto.setStatus(route.getStatus());
         dto.setNote(route.getNote());
+        dto.setDisplayOrder(route.getDisplayOrder());
         return dto;
     }
 }

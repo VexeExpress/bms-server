@@ -20,6 +20,9 @@ public class EmployeeMapper {
         employee.setEmail(dto.getEmail());
         employee.setAddress(dto.getAddress());
         employee.setStatus(dto.getStatus());
+        employee.setAccessBms(dto.getAccessBms());
+        employee.setAccessCms(dto.getAccessCms());
+        employee.setAccessTms(dto.getAccessTms());
         return employee;
     }
     public static EmployeeDTO toDTO(Employee employee) {
@@ -35,6 +38,9 @@ public class EmployeeMapper {
         dto.setBirthDate(employee.getBirthDate());
         dto.setGender(employee.getGender());
         dto.setStatus(employee.getStatus());
+        dto.setAccessBms(employee.getAccessBms());
+        dto.setAccessCms(employee.getAccessCms());
+        dto.setAccessTms(employee.getAccessTms());
         return dto;
     }
 }

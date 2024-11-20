@@ -25,8 +25,11 @@ public class Route {
     private Double displayPrice;
 
     @Column(name = "status")
-    private Integer status;
+    private Boolean status;
 
     @Column(name = "note")
     private String note;
+
+    @Column(name = "display_order")
+    private Integer displayOrder;
 }

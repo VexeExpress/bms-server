@@ -10,13 +10,20 @@ public class OfficeMapper {
         Office office = new Office();
         office.setCompany(company);
         office.setOfficeName(dto.getOfficeName());
+        office.setOfficeCode(dto.getOfficeCode());
+        office.setPhone(dto.getPhone());
+        office.setAddress(dto.getAddress());
+        office.setStatus(dto.getStatus());
         return office;
     }
     public static OfficeResponseDTO toResponseDTO(Office office) {
         OfficeResponseDTO dto = new OfficeResponseDTO();
         dto.setId(office.getId());
         dto.setOfficeName(office.getOfficeName());
-        dto.setCreatedAt(office.getCreatedAt());
+        dto.setOfficeCode(office.getOfficeCode());
+        dto.setPhone(office.getPhone());
+        dto.setAddress(office.getAddress());
+        dto.setStatus(office.getStatus());
         return dto;
     }
 }

@@ -8,13 +8,8 @@ import java.time.LocalDate;
 public class OfficeResponseDTO {
     private Long id;
     private String officeName;
-    private LocalDate createdAt;
-
-
-    public OfficeResponseDTO() {
-
-    }
-
-    public OfficeResponseDTO(Long id, String officeName, LocalDate createdAt) {
-    }
+    private String officeCode;
+    private Boolean status;
+    private String phone;
+    private String address;
 }

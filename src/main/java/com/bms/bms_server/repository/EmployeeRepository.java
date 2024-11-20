@@ -1,7 +1,10 @@
 package com.bms.bms_server.repository;
 
+import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
 import com.bms.bms_server.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +19,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     boolean existsByUsernameAndCompanyIdAndIdNot(String username, Long companyId, Long id);
     Optional<Employee> findByUsername(String username);
 
+
+    List<Employee> findByFullNameContainingAndCompanyId(String fullName, Long companyId);
+
+    List<Employee> findByRoleAndCompanyId(Integer role, Long companyId);
 }

@@ -14,6 +14,9 @@ public class EmployeeDTO {
     private Integer gender;
     private String email;
     private String address;
-    private Integer status;
+    private Boolean status;
     private Integer role;
+    private Boolean accessBms;
+    private Boolean accessCms;
+    private Boolean accessTms;
 }

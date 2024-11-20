@@ -57,15 +57,13 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
-//
     // UC_EM_03: Cập nhật thông tin nhân viên
     @PutMapping("/update/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee (@PathVariable Long id, @RequestBody EditEmployeeDTO dto) {
         if (id == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: Dữ liệu vào không hợp lệ
         }
-        if (dto.getUsername() == null || dto.getUsername().isEmpty() ||
-                dto.getFullName() == null || dto.getFullName().isEmpty() ||
+        if (dto.getFullName() == null || dto.getFullName().isEmpty() ||
                 dto.getRole() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: Dữ liệu vào không hợp lệ
         }
@@ -81,7 +79,7 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
-//
+
     // UC_EM_04: Khóa tài khoản nhân viên
     @PostMapping("/lock/{id}")
     public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
@@ -119,11 +117,39 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
-//
-//    // UC_EM_06: Tìm kiếm nhân viên theo “tên” - Ở FE xử lý được thì BE không cần làm
-//
-//    // UC_EM_07: Lọc nhân viên theo “vai trò” - Ở FE xử lý được thì BE không cần làm
-//
+
+    // UC_EM_06: Tìm kiếm nhân viên theo “tên”
+    @GetMapping("/filter-by-name")
+    public ResponseEntity<List<EmployeeDTO>> searchEmployeesByName(
+            @RequestParam("fullName") String fullName,
+            @RequestParam("companyId") Long companyId) {
+
+        try {
+            List<EmployeeDTO> employees = employeeService.searchEmployeesByName(fullName, companyId);
+            if (employees.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy nhân viên
+            }
+            return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+    // UC_EM_07: Lọc nhân viên theo “vai trò”
+    @GetMapping("/filter-by-role")
+    public ResponseEntity<List<EmployeeDTO>> searchEmployeesByRole(
+            @RequestParam("role") Integer role,
+            @RequestParam("companyId") Long companyId) {
+
+        try {
+            List<EmployeeDTO> employees = employeeService.searchEmployeesByRole(role, companyId);
+            if (employees.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy nhân viên
+            }
+            return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
     // UC_EM_08: Lấy danh sách nhân viên dựa vào ID của công ty
     @GetMapping("/list-employee/{companyId}")
     public ResponseEntity<List<EmployeeDTO>> getEmployeesByCompanyId(@PathVariable Long companyId) {
@@ -140,6 +166,8 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
+
+
 
 
 

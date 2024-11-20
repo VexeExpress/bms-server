@@ -44,5 +44,4 @@ public class Vehicle {
 
     @Column(name = "brand")
     private Integer brand; // Hãng xe
-
 }

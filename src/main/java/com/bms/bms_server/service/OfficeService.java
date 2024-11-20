@@ -56,6 +56,10 @@ public class OfficeService {
                 .orElseThrow(() -> new EntityNotFoundException("Office with ID " + officeId + " not found"));
         if (updatedData.getOfficeName() != null) {
             office.setOfficeName(updatedData.getOfficeName());
+            office.setOfficeCode(updatedData.getOfficeCode());
+            office.setAddress(updatedData.getAddress());
+            office.setPhone(updatedData.getPhone());
+            office.setStatus(updatedData.getStatus());
         }
         Office updatedOffice = officeRepository.save(office);
         return OfficeMapper.toResponseDTO(updatedOffice);

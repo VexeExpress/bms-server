@@ -42,7 +42,7 @@ public class AuthService {
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), employee.getPassword())){
             throw new InvalidPasswordException("Mat khau khong dung");
         }
-        if (employee.getStatus() == 2) {
+        if (!employee.getStatus()) {
             throw new AccountLockedException("Tai khoan bi khoa");// 1: Hoạt động. 2: Ngưng hoạt động
         }
         if (!employee.getCompany().getStatus()) {
