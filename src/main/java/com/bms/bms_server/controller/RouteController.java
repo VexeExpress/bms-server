@@ -1,5 +1,6 @@
 package com.bms.bms_server.controller;
 
+import com.bms.bms_server.dto.Route.RouteNameResponseDTO;
 import com.bms.bms_server.dto.Route.RouteRequestDTO;
 import com.bms.bms_server.dto.Route.RouteResponseDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleRequestDTO;
@@ -87,6 +88,16 @@ public class RouteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500
+        }
+    }
+
+    @GetMapping("/list-route-name/{companyId}")
+    public ResponseEntity<List<RouteNameResponseDTO>> getRouteNameByCompanyId(@PathVariable Long companyId) {
+        try {
+            List<RouteNameResponseDTO> response = routeService.getListRouteNameByCompanyId(companyId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
 

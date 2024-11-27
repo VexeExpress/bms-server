@@ -1,5 +1,6 @@
 package com.bms.bms_server.service;
 
+import com.bms.bms_server.dto.Route.RouteNameResponseDTO;
 import com.bms.bms_server.dto.Route.RouteRequestDTO;
 import com.bms.bms_server.dto.Route.RouteResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -42,10 +43,7 @@ public class RouteService {
         return RouteMapper.toDTO(saved);
     }
 
-    public List<RouteResponseDTO> getListRouteByCompanyId(Long companyId) {
-        List<Route> routes = routeRepository.findByCompanyIdOrderByDisplayOrderAsc(companyId);
-        return routes.stream().map(RouteMapper::toDTO).collect(Collectors.toList());
-    }
+
 
     public RouteResponseDTO updateRoute(Long routeId, RouteRequestDTO updatedData) {
         Route route = routeRepository.findById(routeId).orElseThrow(() -> new EntityNotFoundException("Route with ID " + routeId + " not found"));
@@ -88,5 +86,17 @@ public class RouteService {
 
         routeRepository.save(previousRoute);
         routeRepository.save(route);
+    }
+    public List<RouteResponseDTO> getListRouteByCompanyId(Long companyId) {
+        List<Route> routes = routeRepository.findByCompanyIdOrderByDisplayOrderAsc(companyId);
+        return routes.stream().map(RouteMapper::toDTO).collect(Collectors.toList());
+    }
+
+    public List<RouteNameResponseDTO> getListRouteNameByCompanyId(Long companyId) {
+        List<Route> routes = routeRepository.findByCompanyIdOrderByDisplayOrderAsc(companyId);
+        return routes.stream()
+                .filter(Route::getStatus) // Only include routes where status is true
+                .map(RouteMapper::toRouteNameDTO)
+                .collect(Collectors.toList());
     }
 }

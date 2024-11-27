@@ -1,5 +1,6 @@
 package com.bms.bms_server.mapper;
 
+import com.bms.bms_server.dto.Route.RouteNameResponseDTO;
 import com.bms.bms_server.dto.Route.RouteRequestDTO;
 import com.bms.bms_server.dto.Route.RouteResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -25,6 +26,12 @@ public class RouteMapper {
         dto.setStatus(route.getStatus());
         dto.setNote(route.getNote());
         dto.setDisplayOrder(route.getDisplayOrder());
+        return dto;
+    }
+    public static RouteNameResponseDTO toRouteNameDTO(Route route) {
+        RouteNameResponseDTO dto = new RouteNameResponseDTO();
+        dto.setId(route.getId());
+        dto.setRouteName(route.getRouteName());
         return dto;
     }
 }
