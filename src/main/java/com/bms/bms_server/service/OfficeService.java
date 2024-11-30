@@ -1,5 +1,6 @@
 package com.bms.bms_server.service;
 
+import com.bms.bms_server.dto.Office.OfficeNameResponseDTO;
 import com.bms.bms_server.dto.Office.OfficeRequestDTO;
 import com.bms.bms_server.dto.Office.OfficeResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -69,5 +70,12 @@ public class OfficeService {
         Office office = officeRepository.findById(officeId)
                 .orElseThrow(() -> new EntityNotFoundException("Văn phòng không tồn tại"));
         officeRepository.delete(office);
+    }
+
+    public List<OfficeNameResponseDTO> getListOfficeNameByCompanyId(Long companyId) {
+        List<Office> offices = officeRepository.findByCompanyId(companyId);
+        return offices.stream()
+                .map(OfficeMapper::toOfficeNameResponseDTO)
+                .collect(Collectors.toList());
     }
 }

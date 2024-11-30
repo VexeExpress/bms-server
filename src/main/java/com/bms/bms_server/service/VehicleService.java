@@ -1,5 +1,6 @@
 package com.bms.bms_server.service;
 
+import com.bms.bms_server.dto.Vehicle.LicensePlateVehicleResponseDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleRequestDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -65,5 +66,13 @@ public class VehicleService {
     public void deleteVehicleById(Long vehicleId) {
         Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new EntityNotFoundException("Phương tiện không tồn tại"));
         vehicleRepository.delete(vehicle);
+    }
+
+    public List<LicensePlateVehicleResponseDTO> getLicensePlateVehicleByCompanyId(Long companyId) {
+        List<Vehicle> vehicles = vehicleRepository.findByCompanyId(companyId);
+        return vehicles.stream()
+                .filter(vehicle -> vehicle.getStatus() == 1)
+                .map(VehicleMapper::toResponseLicenseDTO)
+                .collect(Collectors.toList());
     }
 }

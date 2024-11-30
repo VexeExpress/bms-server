@@ -35,7 +35,7 @@ public class SeatingChartService {
             SeatingChart seatingChart = SeatChartMapper.toEntity(dto, company);
 
             // Liên kết từng seat với seatingChart
-            seatingChart.getSeats().forEach(seat -> seat.setSeatingChart(seatingChart));
+//            seatingChart.getSeats().forEach(seat -> seat.setSeatingChart(seatingChart));
 
             // Lưu seatingChart vào database (các seat cũng được lưu nhờ Cascade)
             SeatingChart savedSeatingChart = seatingChartRepository.save(seatingChart);
@@ -111,7 +111,7 @@ public class SeatingChartService {
                 newSeat.setFloor(updatedSeat.getFloor());
                 newSeat.setRow(updatedSeat.getRow());
                 newSeat.setColumn(updatedSeat.getColumn());
-                newSeat.setSeatingChart(seatingChart);
+//                newSeat.setSeatingChart(seatingChart);
                 seatingChart.getSeats().add(newSeat);
             }
         }
@@ -151,6 +151,10 @@ public class SeatingChartService {
     }
 
 
-
-
+    public List<SeatingChartNameDTO> getListSeatingChartNameByCompanyId(Long companyId) {
+        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompanyId(companyId);
+        return seatingCharts.stream()
+                .map(SeatChartMapper::toResponseNameDTO)
+                .collect(Collectors.toList());
+    }
 }

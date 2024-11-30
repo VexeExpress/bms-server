@@ -1,5 +1,6 @@
 package com.bms.bms_server.controller;
 
+import com.bms.bms_server.dto.Office.OfficeNameResponseDTO;
 import com.bms.bms_server.dto.Office.OfficeRequestDTO;
 import com.bms.bms_server.dto.Office.OfficeResponseDTO;
 import com.bms.bms_server.service.OfficeService;
@@ -67,6 +68,15 @@ public class OfficeController {
             return ResponseEntity.noContent().build(); // 204: Xóa thành công
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy văn phòng
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+    @GetMapping("/list-office-name/{companyId}")
+    public ResponseEntity<List<OfficeNameResponseDTO>> getListOfficeNameByCompanyId(@PathVariable Long companyId) {
+        try {
+            List<OfficeNameResponseDTO> officeResponse = officeService.getListOfficeNameByCompanyId(companyId);
+            return ResponseEntity.ok(officeResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }

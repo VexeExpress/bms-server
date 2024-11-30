@@ -1,5 +1,6 @@
 package com.bms.bms_server.mapper;
 
+import com.bms.bms_server.dto.Office.OfficeNameResponseDTO;
 import com.bms.bms_server.dto.Office.OfficeRequestDTO;
 import com.bms.bms_server.dto.Office.OfficeResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -24,6 +25,12 @@ public class OfficeMapper {
         dto.setPhone(office.getPhone());
         dto.setAddress(office.getAddress());
         dto.setStatus(office.getStatus());
+        return dto;
+    }
+    public static OfficeNameResponseDTO toOfficeNameResponseDTO(Office office) {
+        OfficeNameResponseDTO dto = new OfficeNameResponseDTO();
+        dto.setId(office.getId());
+        dto.setOfficeName(office.getOfficeName());
         return dto;
     }
 }

@@ -12,8 +12,8 @@ import com.bms.bms_server.exception.UserNotFoundException;
 import com.bms.bms_server.mapper.LoginHistoryMapper;
 import com.bms.bms_server.repository.EmployeeRepository;
 import com.bms.bms_server.repository.LoginHistoryRepository;
+import com.bms.bms_server.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +28,8 @@ public class AuthService {
     EmployeeRepository employeeRepository;
     @Autowired
     LoginHistoryRepository loginHistoryRepository;
+    @Autowired
+    JwtUtil jwtUtil;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -49,10 +51,19 @@ public class AuthService {
             throw new CompanyLockedException("Cong ty bi khoa");
         }
         LoginResponseDTO response = new LoginResponseDTO();
-        response.setId(employee.getId());
         response.setFullName(employee.getFullName());
-        response.setCompanyId(employee.getCompany().getId());
         response.setCompanyName(employee.getCompany().getCompanyName());
+
+        // Tạo token JWT
+        try {
+            String token = jwtUtil.generateToken(employee);
+            response.setToken(token);
+            System.out.println("Generated Token: " + token);
+        } catch (Exception e) {
+            System.err.println("Error generating token: " + e.getMessage());
+            throw new RuntimeException("Error generating token");
+        }
+
 
         // Save login history
         saveLoginHistory(loginRequestDTO, employee);

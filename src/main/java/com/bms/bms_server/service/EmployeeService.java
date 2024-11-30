@@ -2,6 +2,8 @@ package com.bms.bms_server.service;
 
 import com.bms.bms_server.dto.Employee.request.CreateEmployeeDTO;
 import com.bms.bms_server.dto.Employee.request.EditEmployeeDTO;
+import com.bms.bms_server.dto.Employee.response.AssistantResponseDTO;
+import com.bms.bms_server.dto.Employee.response.DriverResponseDTO;
 import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
 import com.bms.bms_server.entity.Company;
 import com.bms.bms_server.entity.Employee;
@@ -119,5 +121,23 @@ public class EmployeeService {
         return employees.stream()
                 .map(EmployeeMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<DriverResponseDTO> getDriverByCompanyId(Long companyId) {
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream()
+                .filter(employee -> employee.getStatus() && employee.getRole() == 2)
+                .map(EmployeeMapper::toDriverResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<AssistantResponseDTO> getAssistantByCompanyId(Long companyId) {
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream()
+                .filter(employee -> employee.getStatus() && employee.getRole() == 1)
+                .map(EmployeeMapper::toAssistantResponseDTO)
+                .collect(Collectors.toList());
+
     }
 }

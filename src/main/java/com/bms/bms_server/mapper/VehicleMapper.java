@@ -1,5 +1,6 @@
 package com.bms.bms_server.mapper;
 
+import com.bms.bms_server.dto.Vehicle.LicensePlateVehicleResponseDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleRequestDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleResponseDTO;
 import com.bms.bms_server.entity.Company;
@@ -32,6 +33,12 @@ public class VehicleMapper {
         dto.setColor(vehicle.getColor());
         dto.setMaintenancePeriod(vehicle.getMaintenancePeriod());
         dto.setBrand(vehicle.getBrand());
+        return dto;
+    }
+    public static LicensePlateVehicleResponseDTO toResponseLicenseDTO(Vehicle vehicle) {
+        LicensePlateVehicleResponseDTO dto = new LicensePlateVehicleResponseDTO();
+        dto.setId(vehicle.getId());
+        dto.setLicensePlate(vehicle.getLicensePlate());
         return dto;
     }
 }

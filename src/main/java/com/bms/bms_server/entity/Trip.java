@@ -24,8 +24,12 @@ public class Trip {
     private Route route;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", nullable = true)
     private Vehicle vehicle;
+
+    @ManyToOne
+    @JoinColumn(name = "seat_chart_id", referencedColumnName = "id")
+    private SeatingChart seatChart;
 
     @ManyToMany
     @JoinTable(

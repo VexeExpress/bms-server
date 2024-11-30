@@ -10,6 +10,7 @@ public class TripRequestDTO {
     private Long companyId;
     private Long routeId;
     private Long vehicleId;
+    private Long seatChartId;
     private List<Long> driverIds;
     private List<Long> assistantIds;
     private LocalTime timeDeparture;

@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SeatingChartRepository extends JpaRepository<SeatingChart, Long> {
     List<SeatingChart> findByCompany(Company company);
+
+    List<SeatingChart> findByCompanyId(Long companyId);
 }

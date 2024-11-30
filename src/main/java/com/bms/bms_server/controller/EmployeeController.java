@@ -2,6 +2,8 @@ package com.bms.bms_server.controller;
 
 import com.bms.bms_server.dto.Employee.request.CreateEmployeeDTO;
 import com.bms.bms_server.dto.Employee.request.EditEmployeeDTO;
+import com.bms.bms_server.dto.Employee.response.AssistantResponseDTO;
+import com.bms.bms_server.dto.Employee.response.DriverResponseDTO;
 import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
 import com.bms.bms_server.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,6 +166,25 @@ public class EmployeeController {
             return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+
+    @GetMapping("/list-driver/{companyId}")
+    public ResponseEntity<List<DriverResponseDTO>> getDriverByCompanyId(@PathVariable Long companyId) {
+        try {
+            List<DriverResponseDTO> response = employeeService.getDriverByCompanyId(companyId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
+        }
+    }
+    @GetMapping("/list-assistant/{companyId}")
+    public ResponseEntity<List<AssistantResponseDTO>> getAssistantByCompanyId(@PathVariable Long companyId) {
+        try {
+            List<AssistantResponseDTO> response = employeeService.getAssistantByCompanyId(companyId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
 

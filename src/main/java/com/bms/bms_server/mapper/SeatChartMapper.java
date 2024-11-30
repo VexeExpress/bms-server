@@ -1,9 +1,6 @@
 package com.bms.bms_server.mapper;
 
-import com.bms.bms_server.dto.SeatingChart.SeatRequestDTO;
-import com.bms.bms_server.dto.SeatingChart.SeatResponseDTO;
-import com.bms.bms_server.dto.SeatingChart.SeatingChartRequestDTO;
-import com.bms.bms_server.dto.SeatingChart.SeatingChartResponseDTO;
+import com.bms.bms_server.dto.SeatingChart.*;
 import com.bms.bms_server.entity.Company;
 import com.bms.bms_server.entity.Seat;
 import com.bms.bms_server.entity.SeatingChart;
@@ -60,6 +57,12 @@ public class SeatChartMapper {
                 .collect(Collectors.toList());
 
         responseDTO.setSeats(seatResponseDTOS);
+        return responseDTO;
+    }
+    public static SeatingChartNameDTO toResponseNameDTO(SeatingChart seatingChart) {
+        SeatingChartNameDTO responseDTO = new SeatingChartNameDTO();
+        responseDTO.setId(seatingChart.getId());
+        responseDTO.setSeatingChartName(seatingChart.getSeatingChartName());
         return responseDTO;
     }
 }

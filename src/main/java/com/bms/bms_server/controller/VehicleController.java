@@ -2,6 +2,7 @@ package com.bms.bms_server.controller;
 
 import com.bms.bms_server.dto.Office.OfficeRequestDTO;
 import com.bms.bms_server.dto.Office.OfficeResponseDTO;
+import com.bms.bms_server.dto.Vehicle.LicensePlateVehicleResponseDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleRequestDTO;
 import com.bms.bms_server.dto.Vehicle.VehicleResponseDTO;
 import com.bms.bms_server.service.VehicleService;
@@ -77,6 +78,15 @@ public class VehicleController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy phuong tien
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+        }
+    }
+    @GetMapping("/list-license-plate/{companyId}")
+    public ResponseEntity<List<LicensePlateVehicleResponseDTO>> getLicensePlateVehicleByCompanyId(@PathVariable Long companyId) {
+        try {
+            List<LicensePlateVehicleResponseDTO> response = vehicleService.getLicensePlateVehicleByCompanyId(companyId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
 }

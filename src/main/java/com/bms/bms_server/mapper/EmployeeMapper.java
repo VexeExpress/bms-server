@@ -1,6 +1,8 @@
 package com.bms.bms_server.mapper;
 
 import com.bms.bms_server.dto.Employee.request.CreateEmployeeDTO;
+import com.bms.bms_server.dto.Employee.response.AssistantResponseDTO;
+import com.bms.bms_server.dto.Employee.response.DriverResponseDTO;
 import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
 import com.bms.bms_server.entity.Company;
 import com.bms.bms_server.entity.Employee;
@@ -41,6 +43,18 @@ public class EmployeeMapper {
         dto.setAccessBms(employee.getAccessBms());
         dto.setAccessCms(employee.getAccessCms());
         dto.setAccessTms(employee.getAccessTms());
+        return dto;
+    }
+    public static DriverResponseDTO toDriverResponseDTO(Employee employee) {
+        DriverResponseDTO dto = new DriverResponseDTO();
+        dto.setId(employee.getId());
+        dto.setFullName(employee.getFullName());
+        return dto;
+    }
+    public static AssistantResponseDTO toAssistantResponseDTO(Employee employee) {
+        AssistantResponseDTO dto = new AssistantResponseDTO();
+        dto.setId(employee.getId());
+        dto.setFullName(employee.getFullName());
         return dto;
     }
 }

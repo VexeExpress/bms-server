@@ -30,6 +30,7 @@ public class SeatingChart {
     @Column(name = "total_columns", nullable = false)
     private Integer totalColumns;
 
-    @OneToMany(mappedBy = "seatingChart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "seating_chart_id")
     private List<Seat> seats;
 }

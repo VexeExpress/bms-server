@@ -30,8 +30,8 @@ public class Seat {
     @Column(name = "seat_column", nullable = false)
     private Integer column;
 
-    @ManyToOne
-    @JoinColumn(name = "seating_chart_id", referencedColumnName = "id")
-    private SeatingChart seatingChart;
+//    @ManyToOne
+//    @JoinColumn(name = "seating_chart_id", referencedColumnName = "id")
+//    private SeatingChart seatingChart;
 
 }

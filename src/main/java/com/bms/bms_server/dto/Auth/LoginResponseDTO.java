@@ -4,8 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoginResponseDTO {
-    private Long id;
     private String fullName;
-    private Long companyId;
     private String companyName;
+    private String token;
 }
