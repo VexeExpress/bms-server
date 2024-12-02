@@ -23,6 +23,7 @@ public class TicketMapper {
         dto.setTicketPrice(ticket.getTicketPrice());
         dto.setEmployeeName(ticket.getEmployee() != null ? ticket.getEmployee().getFullName() : "");
         dto.setOfficeName(ticket.getOffice() != null ? ticket.getOffice().getOfficeName() : "");
+        dto.setBookingStatus(ticket.getBookingStatus());
         return dto;
 
     }

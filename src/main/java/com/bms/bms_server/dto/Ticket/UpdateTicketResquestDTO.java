@@ -4,13 +4,13 @@ import lombok.Data;
 
 @Data
 public class UpdateTicketResquestDTO {
-    private String dropoff;
-    private String name;
-    private String note;
+    private String ticketPointDown;
+    private String customerName;
+    private String ticketNote;
     private Integer paymentType;
-    private String phone;
-    private String pickup;
-    private Double price;
+    private String ticketPhone;
+    private String ticketPointUp;
+    private Double ticketPrice;
     private Long officeId;
     private Long employeeId;
 }

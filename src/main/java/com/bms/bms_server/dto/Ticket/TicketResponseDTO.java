@@ -21,4 +21,5 @@ public class TicketResponseDTO {
     private Double ticketPrice;
     private String employeeName;
     private String officeName;
+    private Boolean bookingStatus;
 }

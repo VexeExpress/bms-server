@@ -44,13 +44,14 @@ public class TicketService {
             Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
             if (ticketOptional.isPresent()) {
                 Ticket ticket = ticketOptional.get();
-                ticket.setTicketPhone(commonData.getPhone());
-                ticket.setCustomerName(commonData.getName());
-                ticket.setTicketPointUp(commonData.getPickup());
-                ticket.setTicketPointDown(commonData.getDropoff());
-                ticket.setTicketNote(commonData.getNote());
+                ticket.setTicketPhone(commonData.getTicketPhone());
+                ticket.setCustomerName(commonData.getCustomerName());
+                ticket.setTicketPointUp(commonData.getTicketPointUp());
+                ticket.setTicketPointDown(commonData.getTicketPointDown());
+                ticket.setTicketNote(commonData.getTicketNote());
                 ticket.setPaymentType(commonData.getPaymentType());
-                ticket.setTicketPrice(commonData.getPrice());
+                ticket.setTicketPrice(commonData.getTicketPrice());
+                ticket.setBookingStatus(true);
                 Optional<Office> officeOptional = officeRepository.findById(commonData.getOfficeId());
                 officeOptional.ifPresent(ticket::setOffice);
                 Optional<Employee> employeeOptional = employeeRepository.findById(commonData.getEmployeeId());

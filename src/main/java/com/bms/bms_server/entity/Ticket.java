@@ -67,5 +67,7 @@ public class Ticket {
     @Column(name = "ticket_price")
     private Double ticketPrice;
 
+    @Column(name = "booking_status", nullable = false)
+    private Boolean bookingStatus = false;
 
 }
