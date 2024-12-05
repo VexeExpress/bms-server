@@ -57,9 +57,9 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.CREATED).build(); // 201: Thành công
 
         } catch (IllegalArgumentException e) {
+            // Lỗi xác thực dữ liệu
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
-
         }  catch (Exception e) {
             // Lỗi hệ thống không xác định
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
