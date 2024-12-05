@@ -1,6 +1,6 @@
 package com.bms.bms_server.utils;
 
-import com.bms.bms_server.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

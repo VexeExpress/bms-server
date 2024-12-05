@@ -1,14 +1,14 @@
-package com.bms.bms_server.mapper;
+package com.bms.bms_server.modules.ModuleEmployee.mapper;
 
-import com.bms.bms_server.dto.Employee.request.CreateEmployeeDTO;
-import com.bms.bms_server.dto.Employee.response.AssistantResponseDTO;
-import com.bms.bms_server.dto.Employee.response.DriverResponseDTO;
-import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RQ_CreateEmployee;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Assistant;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Driver;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Employee;
 import com.bms.bms_server.entity.Company;
-import com.bms.bms_server.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 
 public class EmployeeMapper {
-    public static Employee toEntity(CreateEmployeeDTO dto, Company company) {
+    public static Employee toEntity(DTO_RQ_CreateEmployee dto, Company company) {
         Employee employee = new Employee();
         employee.setCompany(company);
         employee.setFullName(dto.getFullName());
@@ -27,8 +27,8 @@ public class EmployeeMapper {
         employee.setAccessTms(dto.getAccessTms());
         return employee;
     }
-    public static EmployeeDTO toDTO(Employee employee) {
-        EmployeeDTO dto = new EmployeeDTO();
+    public static DTO_RP_Employee toDTO(Employee employee) {
+        DTO_RP_Employee dto = new DTO_RP_Employee();
         dto.setId(employee.getId());
         dto.setFullName(employee.getFullName());
         dto.setUsername(employee.getUsername());
@@ -45,14 +45,14 @@ public class EmployeeMapper {
         dto.setAccessTms(employee.getAccessTms());
         return dto;
     }
-    public static DriverResponseDTO toDriverResponseDTO(Employee employee) {
-        DriverResponseDTO dto = new DriverResponseDTO();
+    public static DTO_RP_Driver toDriverResponseDTO(Employee employee) {
+        DTO_RP_Driver dto = new DTO_RP_Driver();
         dto.setId(employee.getId());
         dto.setFullName(employee.getFullName());
         return dto;
     }
-    public static AssistantResponseDTO toAssistantResponseDTO(Employee employee) {
-        AssistantResponseDTO dto = new AssistantResponseDTO();
+    public static DTO_RP_Assistant toAssistantResponseDTO(Employee employee) {
+        DTO_RP_Assistant dto = new DTO_RP_Assistant();
         dto.setId(employee.getId());
         dto.setFullName(employee.getFullName());
         return dto;

@@ -1,11 +1,11 @@
-package com.bms.bms_server.entity;
+package com.bms.bms_server.modules.ModuleEmployee.entity;
 
+import com.bms.bms_server.entity.Company;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "employee")

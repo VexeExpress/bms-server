@@ -2,11 +2,11 @@ package com.bms.bms_server.service;
 
 import com.bms.bms_server.dto.Ticket.TicketResponseDTO;
 import com.bms.bms_server.dto.Ticket.UpdateTicketResquestDTO;
-import com.bms.bms_server.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import com.bms.bms_server.entity.Office;
 import com.bms.bms_server.entity.Ticket;
 import com.bms.bms_server.mapper.TicketMapper;
-import com.bms.bms_server.repository.EmployeeRepository;
+import com.bms.bms_server.modules.ModuleEmployee.repository.EmployeeRepository;
 import com.bms.bms_server.repository.OfficeRepository;
 import com.bms.bms_server.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;

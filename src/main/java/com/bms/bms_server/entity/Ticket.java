@@ -1,5 +1,6 @@
 package com.bms.bms_server.entity;
 
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,15 +1,10 @@
-package com.bms.bms_server.dto.Employee.request;
+package com.bms.bms_server.modules.ModuleEmployee.dto;
 
 import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-public class CreateEmployeeDTO {
-    private String username;
-    private String password;
-    private Boolean accessBms;
-    private Boolean accessCms;
-    private Boolean accessTms;
+public class DTO_RQ_EditEmployee {
     private String fullName;
     private String phone;
     private LocalDate startDate;
@@ -19,5 +14,7 @@ public class CreateEmployeeDTO {
     private String address;
     private Boolean status;
     private Integer role;
-    private Long companyId;
+    private Boolean accessBms;
+    private Boolean accessCms;
+    private Boolean accessTms;
 }

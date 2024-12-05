@@ -6,5 +6,6 @@ import lombok.Data;
 public class LoginResponseDTO {
     private String fullName;
     private String companyName;
+    private Long companyId;
     private String token;
 }

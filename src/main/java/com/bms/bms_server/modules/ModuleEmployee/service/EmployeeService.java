@@ -1,15 +1,15 @@
-package com.bms.bms_server.service;
+package com.bms.bms_server.modules.ModuleEmployee.service;
 
-import com.bms.bms_server.dto.Employee.request.CreateEmployeeDTO;
-import com.bms.bms_server.dto.Employee.request.EditEmployeeDTO;
-import com.bms.bms_server.dto.Employee.response.AssistantResponseDTO;
-import com.bms.bms_server.dto.Employee.response.DriverResponseDTO;
-import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RQ_CreateEmployee;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RQ_EditEmployee;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Assistant;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Driver;
+import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Employee;
 import com.bms.bms_server.entity.Company;
-import com.bms.bms_server.entity.Employee;
-import com.bms.bms_server.mapper.EmployeeMapper;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.mapper.EmployeeMapper;
 import com.bms.bms_server.repository.CompanyRepository;
-import com.bms.bms_server.repository.EmployeeRepository;
+import com.bms.bms_server.modules.ModuleEmployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,19 +31,36 @@ public class EmployeeService {
         return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
     }
 
-    @Transactional
-    public void createEmployee(CreateEmployeeDTO dto) {
-        System.out.println(dto);
-        Company company = companyRepository.findById(dto.getCompanyId())
-                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+    public void createEmployee(DTO_RQ_CreateEmployee dto) {
+        try {
+            // Kiểm tra sự tồn tại của công ty
+            Company company = companyRepository.findById(dto.getCompanyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Công ty không tồn tại"));
 
-        String hashedPassword = passwordEncoder.encode(dto.getPassword());
-        dto.setPassword(hashedPassword);
+            // Mã hóa mật khẩu
+            String hashedPassword = passwordEncoder.encode(dto.getPassword());
 
-        Employee employee = EmployeeMapper.toEntity(dto, company);
+            // Nếu mã hóa thất bại, sẽ ném lỗi IllegalArgumentException
+            if (hashedPassword == null || hashedPassword.isEmpty()) {
+                throw new IllegalArgumentException("Mã hóa mật khẩu không thành công");
+            }
 
-        employeeRepository.save(employee);
+            // Cập nhật lại mật khẩu đã mã hóa vào DTO
+            dto.setPassword(hashedPassword);
+
+            // Chuyển đổi DTO sang entity và lưu vào cơ sở dữ liệu
+            Employee employee = EmployeeMapper.toEntity(dto, company);
+            employeeRepository.save(employee);
+
+        } catch (IllegalArgumentException e) {
+            // Lỗi do không tìm thấy công ty hoặc lỗi mã hóa mật khẩu
+            throw new IllegalArgumentException("Lỗi xác thực dữ liệu");
+        } catch (Exception e) {
+            // Bắt các lỗi không xác định khác
+            throw new RuntimeException("Đã xảy ra lỗi không xác định khi tạo nhân viên");
+        }
     }
+
 
     public boolean existsById(Long id) {
         return employeeRepository.existsById(id);
@@ -54,7 +71,7 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    public EmployeeDTO updateEmployee(Long id, EditEmployeeDTO dto) {
+    public DTO_RP_Employee updateEmployee(Long id, DTO_RQ_EditEmployee dto) {
         System.out.println("Update Employee ID: " + id);
         System.out.println("Update Employee: " + dto);
         Employee employee = employeeRepository.findById(id)
@@ -101,7 +118,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 //
-    public List<EmployeeDTO> getEmployeesByCompanyId(Long companyId) {
+    public List<DTO_RP_Employee> getEmployeesByCompanyId(Long companyId) {
         List<Employee> employees = employeeRepository.findByCompanyId(companyId);
         return employees.stream()
                 .map(EmployeeMapper::toDTO)
@@ -109,21 +126,21 @@ public class EmployeeService {
     }
 
 
-    public List<EmployeeDTO> searchEmployeesByName(String fullName, Long companyId) {
+    public List<DTO_RP_Employee> searchEmployeesByName(String fullName, Long companyId) {
         List<Employee> employees = employeeRepository.findByFullNameContainingAndCompanyId(fullName, companyId);
         return employees.stream()
                 .map(EmployeeMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<EmployeeDTO> searchEmployeesByRole(Integer role, Long companyId) {
+    public List<DTO_RP_Employee> searchEmployeesByRole(Integer role, Long companyId) {
         List<Employee> employees = employeeRepository.findByRoleAndCompanyId(role, companyId);
         return employees.stream()
                 .map(EmployeeMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<DriverResponseDTO> getDriverByCompanyId(Long companyId) {
+    public List<DTO_RP_Driver> getDriverByCompanyId(Long companyId) {
         List<Employee> employees = employeeRepository.findByCompanyId(companyId);
         return employees.stream()
                 .filter(employee -> employee.getStatus() && employee.getRole() == 2)
@@ -132,7 +149,7 @@ public class EmployeeService {
     }
 
 
-    public List<AssistantResponseDTO> getAssistantByCompanyId(Long companyId) {
+    public List<DTO_RP_Assistant> getAssistantByCompanyId(Long companyId) {
         List<Employee> employees = employeeRepository.findByCompanyId(companyId);
         return employees.stream()
                 .filter(employee -> employee.getStatus() && employee.getRole() == 1)

@@ -1,10 +1,7 @@
-package com.bms.bms_server.repository;
+package com.bms.bms_server.modules.ModuleEmployee.repository;
 
-import com.bms.bms_server.dto.Employee.response.EmployeeDTO;
-import com.bms.bms_server.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

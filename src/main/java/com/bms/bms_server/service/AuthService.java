@@ -3,14 +3,14 @@ package com.bms.bms_server.service;
 import com.bms.bms_server.dto.Auth.LoginHistoryResponseDTO;
 import com.bms.bms_server.dto.Auth.LoginRequestDTO;
 import com.bms.bms_server.dto.Auth.LoginResponseDTO;
-import com.bms.bms_server.entity.Employee;
+import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import com.bms.bms_server.entity.LoginHistory;
 import com.bms.bms_server.exception.AccountLockedException;
 import com.bms.bms_server.exception.CompanyLockedException;
 import com.bms.bms_server.exception.InvalidPasswordException;
 import com.bms.bms_server.exception.UserNotFoundException;
 import com.bms.bms_server.mapper.LoginHistoryMapper;
-import com.bms.bms_server.repository.EmployeeRepository;
+import com.bms.bms_server.modules.ModuleEmployee.repository.EmployeeRepository;
 import com.bms.bms_server.repository.LoginHistoryRepository;
 import com.bms.bms_server.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +53,7 @@ public class AuthService {
         LoginResponseDTO response = new LoginResponseDTO();
         response.setFullName(employee.getFullName());
         response.setCompanyName(employee.getCompany().getCompanyName());
+        response.setCompanyId(employee.getCompany().getId());
 
         // Tạo token JWT
         try {

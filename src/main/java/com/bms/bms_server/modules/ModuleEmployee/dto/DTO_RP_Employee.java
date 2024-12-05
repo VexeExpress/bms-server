@@ -1,10 +1,10 @@
-package com.bms.bms_server.dto.Employee.response;
+package com.bms.bms_server.modules.ModuleEmployee.dto;
 
 import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-public class EmployeeDTO {
+public class DTO_RP_Employee {
     private Long id;
     private String username;
     private String fullName;
