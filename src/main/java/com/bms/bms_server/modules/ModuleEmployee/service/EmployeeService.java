@@ -5,15 +5,14 @@ import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RQ_EditEmployee;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Assistant;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Driver;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Employee;
-import com.bms.bms_server.entity.Company;
+import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import com.bms.bms_server.modules.ModuleEmployee.mapper.EmployeeMapper;
-import com.bms.bms_server.repository.CompanyRepository;
+import com.bms.bms_server.modules.ModuleCompany.repository.CompanyRepository;
 import com.bms.bms_server.modules.ModuleEmployee.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

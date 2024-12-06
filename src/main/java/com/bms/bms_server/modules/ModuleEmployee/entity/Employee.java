@@ -1,6 +1,6 @@
 package com.bms.bms_server.modules.ModuleEmployee.entity;
 
-import com.bms.bms_server.entity.Company;
+import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

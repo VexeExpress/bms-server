@@ -67,9 +67,7 @@ public class EmployeeController {
         }
     }
 
-
-
-    // UC_EM_02: Xóa nhân viên
+    // VIN-12: Remove Employee
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEmployee (@PathVariable Long id) {
         if (id == null || id <= 0) {
@@ -85,7 +83,8 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
-    // UC_EM_03: Cập nhật thông tin nhân viên
+
+    // VIN-11: Update Employee Information
     @PutMapping("/update/{id}")
     public ResponseEntity<DTO_RP_Employee> updateEmployee (@PathVariable Long id, @RequestBody DTO_RQ_EditEmployee dto) {
         if (id == null) {

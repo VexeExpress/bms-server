@@ -4,7 +4,7 @@ import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RQ_CreateEmployee;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Assistant;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Driver;
 import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Employee;
-import com.bms.bms_server.entity.Company;
+import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 
 public class EmployeeMapper {
