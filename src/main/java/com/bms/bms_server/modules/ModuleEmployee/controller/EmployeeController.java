@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -107,7 +108,7 @@ public class EmployeeController {
         }
     }
 
-    // UC_EM_04: Khóa tài khoản nhân viên
+    // VIN-13: Lock Account Employee
     @PostMapping("/lock/{id}")
     public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
         if (id == null || id <= 0) {
@@ -161,6 +162,7 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
+
     // UC_EM_07: Lọc nhân viên theo “vai trò”
     @GetMapping("/filter-by-role")
     public ResponseEntity<List<DTO_RP_Employee>> searchEmployeesByRole(
@@ -177,7 +179,8 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
     }
-    // UC_EM_08: Lấy danh sách nhân viên dựa vào ID của công ty
+
+    @PreAuthorize("hasAnyRole('4')")
     @GetMapping("/list-employee/{companyId}")
     public ResponseEntity<List<DTO_RP_Employee>> getEmployeesByCompanyId(@PathVariable Long companyId) {
         if (companyId == null || companyId <= 0) {
@@ -203,6 +206,7 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
+
     @GetMapping("/list-assistant/{companyId}")
     public ResponseEntity<List<DTO_RP_Assistant>> getAssistantByCompanyId(@PathVariable Long companyId) {
         try {

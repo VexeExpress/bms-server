@@ -1,9 +1,10 @@
 package com.bms.bms_server.modules.ModuleOffice.controller;
 
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeNameResponseDTO;
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeRequestDTO;
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeResponseDTO;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RP_OfficeName;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RQ_Office;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RP_Office;
 import com.bms.bms_server.modules.ModuleOffice.service.OfficeService;
+import com.bms.bms_server.utils.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,38 +21,26 @@ public class OfficeController {
     OfficeService officeService;
 
     @PostMapping("/create")
-    public ResponseEntity<OfficeResponseDTO> create(@RequestBody OfficeRequestDTO dto) {
-        try {
-            OfficeResponseDTO responseDto = officeService.createOffice(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto); // 201
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("required")) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build(); // 422: Du lieu dau vao loi
-            } else if (e.getMessage().contains("already exists")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409: Van phong da ton tai trong cong ty
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: Du lieu vao loi
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Cong ty khong ton tai
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
-        }
+    public ApiResponse<DTO_RP_Office> create(@RequestBody DTO_RQ_Office dto) {
+        ApiResponse<DTO_RP_Office> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(officeService.createOffice(dto));
+        return apiResponse;
     }
     @GetMapping("/list-office/{companyId}")
-    public ResponseEntity<List<OfficeResponseDTO>> getListOfficeByCompanyId(@PathVariable Long companyId) {
+    public ResponseEntity<List<DTO_RP_Office>> getListOfficeByCompanyId(@PathVariable Long companyId) {
         try {
-            List<OfficeResponseDTO> officeResponse = officeService.getListOfficeByCompanyId(companyId);
+            List<DTO_RP_Office> officeResponse = officeService.getListOfficeByCompanyId(companyId);
             return ResponseEntity.ok(officeResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Loi he thong
         }
     }
     @PutMapping("/update/{officeId}")
-    public ResponseEntity<OfficeResponseDTO> updateOffice(
+    public ResponseEntity<DTO_RP_Office> updateOffice(
             @PathVariable Long officeId,
-            @RequestBody OfficeRequestDTO updatedData) {
+            @RequestBody DTO_RQ_Office updatedData) {
         try {
-            OfficeResponseDTO updatedOffice = officeService.updateOffice(officeId, updatedData);
+            DTO_RP_Office updatedOffice = officeService.updateOffice(officeId, updatedData);
             return ResponseEntity.ok(updatedOffice); // 200: Thành công
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy văn phòng
@@ -73,9 +62,9 @@ public class OfficeController {
         }
     }
     @GetMapping("/list-office-name/{companyId}")
-    public ResponseEntity<List<OfficeNameResponseDTO>> getListOfficeNameByCompanyId(@PathVariable Long companyId) {
+    public ResponseEntity<List<DTO_RP_OfficeName>> getListOfficeNameByCompanyId(@PathVariable Long companyId) {
         try {
-            List<OfficeNameResponseDTO> officeResponse = officeService.getListOfficeNameByCompanyId(companyId);
+            List<DTO_RP_OfficeName> officeResponse = officeService.getListOfficeNameByCompanyId(companyId);
             return ResponseEntity.ok(officeResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống

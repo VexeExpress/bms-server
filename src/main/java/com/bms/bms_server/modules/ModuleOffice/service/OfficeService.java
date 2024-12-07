@@ -1,8 +1,10 @@
 package com.bms.bms_server.modules.ModuleOffice.service;
 
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeNameResponseDTO;
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeRequestDTO;
-import com.bms.bms_server.modules.ModuleOffice.dto.OfficeResponseDTO;
+import com.bms.bms_server.exception.AppException;
+import com.bms.bms_server.exception.ErrorCode;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RP_OfficeName;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RQ_Office;
+import com.bms.bms_server.modules.ModuleOffice.dto.DTO_RP_Office;
 import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import com.bms.bms_server.modules.ModuleOffice.entity.Office;
 import com.bms.bms_server.modules.ModuleOffice.mapper.OfficeMapper;
@@ -21,20 +23,21 @@ public class OfficeService {
     OfficeRepository officeRepository;
     @Autowired
     CompanyRepository companyRepository;
-    public OfficeResponseDTO createOffice(OfficeRequestDTO dto) {
+
+    public DTO_RP_Office createOffice(DTO_RQ_Office dto) {
         System.out.println(dto);
         if (dto.getCompanyId() == null) {
-            throw new IllegalArgumentException("Company ID is required.");
+            throw new AppException(ErrorCode.COMPANY_EXISTED);
         }
         if (dto.getOfficeName() == null || dto.getOfficeName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Office name is required.");
+            throw new AppException(ErrorCode.OFFICE_NAME_REQUIRED);
         }
         Company company = companyRepository.findById(dto.getCompanyId())
-                .orElseThrow(() -> new EntityNotFoundException("Company not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_EXISTED));
 
         boolean exists = officeRepository.existsByCompanyAndOfficeName(company, dto.getOfficeName());
         if (exists) {
-            throw new IllegalArgumentException("Office name already exists for this company.");
+            throw new AppException(ErrorCode.OFFICE_EXISTED);
         }
 
         Office office = OfficeMapper.toEntity(dto, company);
@@ -44,14 +47,14 @@ public class OfficeService {
         return OfficeMapper.toResponseDTO(savedOffice);
     }
 
-    public List<OfficeResponseDTO> getListOfficeByCompanyId(Long companyId) {
+    public List<DTO_RP_Office> getListOfficeByCompanyId(Long companyId) {
         List<Office> offices = officeRepository.findByCompanyId(companyId);
         return offices.stream()
                 .map(OfficeMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public OfficeResponseDTO updateOffice(Long officeId, OfficeRequestDTO updatedData) {
+    public DTO_RP_Office updateOffice(Long officeId, DTO_RQ_Office updatedData) {
         System.out.println(updatedData);
         Office office = officeRepository.findById(officeId)
                 .orElseThrow(() -> new EntityNotFoundException("Office with ID " + officeId + " not found"));
@@ -72,7 +75,7 @@ public class OfficeService {
         officeRepository.delete(office);
     }
 
-    public List<OfficeNameResponseDTO> getListOfficeNameByCompanyId(Long companyId) {
+    public List<DTO_RP_OfficeName> getListOfficeNameByCompanyId(Long companyId) {
         List<Office> offices = officeRepository.findByCompanyId(companyId);
         return offices.stream()
                 .map(OfficeMapper::toOfficeNameResponseDTO)
