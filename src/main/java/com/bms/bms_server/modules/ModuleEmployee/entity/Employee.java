@@ -2,68 +2,74 @@ package com.bms.bms_server.modules.ModuleEmployee.entity;
 
 import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "employee")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
-    private Company company;
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    Company company;
 
-    @Column(name = "accept_bms", nullable = false)
-    private Boolean accessBms; // Bus Management System
+    @Column(name = "accept_bms")
+    Boolean accessBms; // Bus Management System
 
-    @Column(name = "accept_cms", nullable = false)
-    private Boolean accessCms; // Cargo Management System
+    @Column(name = "accept_cms")
+    Boolean accessCms; // Cargo Management System
 
-    @Column(name = "accept_tms", nullable = false)
-    private Boolean accessTms; // Ticket Management System
+    @Column(name = "accept_tms")
+    Boolean accessTms; // Ticket Management System
 
-    @Column(name = "username", length = 50, nullable = false)
-    private String username;
+    @Column(name = "username", length = 50)
+    String username;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "password")
+    String password;
 
-    @Column(name = "role", nullable = false)
-    private Integer role; // 1: Phụ xe, // 2: Tài xế, // 3: Nhân viên, // 4: Quản lý
+    @Column(name = "role")
+    Set<String> roles; // 1: Phụ xe, // 2: Tài xế, // 3: Nhân viên, // 4: Quản lý
 
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "full_name")
+    String fullName;
 
     @Column(name = "phone")
-    private String phone;
+    String phone;
 
     @Column(name = "startDate")
-    private LocalDate startDate; // Ngày bắt đầu làm việc
+    LocalDate startDate; // Ngày bắt đầu làm việc
 
     @Column(name = "birthDate")
-    private LocalDate birthDate; // Ngày sinh
+    LocalDate birthDate; // Ngày sinh
 
     @Column(name = "gender")
-    private Integer gender; // 1: Nam, // 2: Nữ, // 3: Khác
+    Integer gender; // 1: Nam, // 2: Nữ, // 3: Khác
 
     @Column(name = "email")
-    private String email;
+    String email;
 
     @Column(name = "address")
-    private String address;
+    String address;
 
     @Column(name = "status")
-    private Boolean status; // true: Hoạt động, // false: Khóa
+    Boolean status; // true: Hoạt động, // false: Khóa
 
 
 
     @Column(name = "created_at")
     @CreationTimestamp
-    private LocalDate createdAt;
+    LocalDate createdAt;
 }

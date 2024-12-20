@@ -1,12 +1,17 @@
 package com.bms.bms_server.modules.ModuleAuth.dto;
 
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DTO_RQ_Login {
-    private String username;
-    private String password;
-    private String ipAddress;
-    private String browserName;
-    private String operatingSystem;
+    String username;
+    String password;
+    String ipAddress;
+    String browserName;
+    String operatingSystem;
 }

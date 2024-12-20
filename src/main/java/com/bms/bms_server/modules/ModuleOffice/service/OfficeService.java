@@ -27,13 +27,13 @@ public class OfficeService {
     public DTO_RP_Office createOffice(DTO_RQ_Office dto) {
         System.out.println(dto);
         if (dto.getCompanyId() == null) {
-            throw new AppException(ErrorCode.COMPANY_EXISTED);
+            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
         }
         if (dto.getOfficeName() == null || dto.getOfficeName().trim().isEmpty()) {
             throw new AppException(ErrorCode.OFFICE_NAME_REQUIRED);
         }
         Company company = companyRepository.findById(dto.getCompanyId())
-                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
 
         boolean exists = officeRepository.existsByCompanyAndOfficeName(company, dto.getOfficeName());
         if (exists) {

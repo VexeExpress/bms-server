@@ -1,22 +1,29 @@
 package com.bms.bms_server.modules.ModuleEmployee.dto;
 
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
+
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DTO_RP_Employee {
-    private Long id;
-    private String username;
-    private String fullName;
-    private String phone;
-    private LocalDate startDate;
-    private LocalDate birthDate;
-    private Integer gender;
-    private String email;
-    private String address;
-    private Boolean status;
-    private Integer role;
-    private Boolean accessBms;
-    private Boolean accessCms;
-    private Boolean accessTms;
+    Long id;
+    String username;
+    String fullName;
+    String phone;
+    LocalDate startDate;
+    LocalDate birthDate;
+    Integer gender;
+    String email;
+    String address;
+    Boolean status;
+    Set<String> roles;
+    Boolean accessBms;
+    Boolean accessCms;
+    Boolean accessTms;
 }
