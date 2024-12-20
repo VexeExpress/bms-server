@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DTO_RP_Introspect {
-    Boolean valid;
-
+public class DTO_RQ_Logout {
+    String token;
 }

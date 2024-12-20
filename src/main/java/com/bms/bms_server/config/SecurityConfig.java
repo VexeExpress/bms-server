@@ -2,6 +2,7 @@ package com.bms.bms_server.config;
 
 import com.bms.bms_server.modules.ModuleEmployee.enums.Role;
 import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,12 +32,13 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @NonFinal
-    protected  static  final String SIGNER_KEY = "s90XEMKELEqFK80jVCWxwRpjsE70aSiEISEk9bEeNScd7FfvLRyLvKowIQgVtAAW\n";
 
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/api/auth/token", "/api/auth/introspect", "/api/employee/create",
+            "/api/auth/token", "/api/auth/introspect", "/api/auth/logout", "/api/auth/refresh-token",
     };
+
+
+    CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -46,22 +48,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
                 httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
+                        jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
 
-    }
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){
@@ -74,7 +68,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

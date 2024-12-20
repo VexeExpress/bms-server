@@ -52,6 +52,25 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    ApiResponse<Void> logout (@RequestBody DTO_RQ_Logout dto) throws ParseException, JOSEException {
+        authService.logout(dto);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .build();
+    }
+
+    @PostMapping("/refresh-token")
+    ApiResponse<DTO_RP_Login> refreshToken(@RequestBody DTO_RQ_RefreshToken dto) throws JOSEException, ParseException {
+        var result = authService.refreshToken(dto);
+        return ApiResponse.<DTO_RP_Login>builder()
+                .code(1000)
+                .result(result)
+                .build();
+
+
+    }
+
 //    @PostMapping("/login")
 //    public ResponseEntity<?> login(@RequestBody DTO_RQ_Login loginRequestDTO) {
 //        if (loginRequestDTO.getUsername() == null || loginRequestDTO.getUsername().isEmpty()) {

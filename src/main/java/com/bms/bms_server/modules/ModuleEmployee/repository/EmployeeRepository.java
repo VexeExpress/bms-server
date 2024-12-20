@@ -1,6 +1,7 @@
 package com.bms.bms_server.modules.ModuleEmployee.repository;
 
 import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
+import lombok.Data;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
