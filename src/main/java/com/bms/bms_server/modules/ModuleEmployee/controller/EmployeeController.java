@@ -27,7 +27,6 @@ import java.util.List;
 @RequestMapping("/api/employee")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
     @Autowired

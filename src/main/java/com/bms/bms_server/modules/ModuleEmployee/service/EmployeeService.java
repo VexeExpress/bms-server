@@ -62,6 +62,7 @@ public class EmployeeService {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
+
     public boolean usernameExists(String username, Long companyId) {
         return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
     }
@@ -131,6 +132,7 @@ public class EmployeeService {
         // Chuyển đổi entity sang DTO để trả về
         return EmployeeMapper.toDTO(employee);
     }
+
     public void lockAccountEmployee(Long id) {
         System.out.println("Lock Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
