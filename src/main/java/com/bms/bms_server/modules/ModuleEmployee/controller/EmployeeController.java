@@ -99,6 +99,7 @@ public class EmployeeController {
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         return ApiResponse.<List<DTO_RP_Employee>>builder()
                 .code(1000)
+                .message("Tải dữ liệu thành công")
                 .result(employeeService.getEmployeesByCompanyId(companyId))
                 .build();
     }

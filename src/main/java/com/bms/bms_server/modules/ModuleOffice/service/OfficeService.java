@@ -11,13 +11,19 @@ import com.bms.bms_server.modules.ModuleOffice.mapper.OfficeMapper;
 import com.bms.bms_server.modules.ModuleCompany.repository.CompanyRepository;
 import com.bms.bms_server.modules.ModuleOffice.repository.OfficeRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OfficeService {
     @Autowired
     OfficeRepository officeRepository;
@@ -34,30 +40,20 @@ public class OfficeService {
         }
         Company company = companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
-
         boolean exists = officeRepository.existsByCompanyAndOfficeName(company, dto.getOfficeName());
         if (exists) {
             throw new AppException(ErrorCode.OFFICE_EXISTED);
         }
-
         Office office = OfficeMapper.toEntity(dto, company);
-
         Office savedOffice = officeRepository.save(office);
         System.out.println("Saved Office: " + savedOffice);
         return OfficeMapper.toResponseDTO(savedOffice);
     }
 
-    public List<DTO_RP_Office> getListOfficeByCompanyId(Long companyId) {
-        List<Office> offices = officeRepository.findByCompanyId(companyId);
-        return offices.stream()
-                .map(OfficeMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
     public DTO_RP_Office updateOffice(Long officeId, DTO_RQ_Office updatedData) {
         System.out.println(updatedData);
         Office office = officeRepository.findById(officeId)
-                .orElseThrow(() -> new EntityNotFoundException("Office with ID " + officeId + " not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.OFFICE_NOT_FOUND));
         if (updatedData.getOfficeName() != null) {
             office.setOfficeName(updatedData.getOfficeName());
             office.setOfficeCode(updatedData.getOfficeCode());
@@ -69,16 +65,37 @@ public class OfficeService {
         return OfficeMapper.toResponseDTO(updatedOffice);
     }
 
-    public void deleteOfficeById(Long officeId) {
-        Office office = officeRepository.findById(officeId)
-                .orElseThrow(() -> new EntityNotFoundException("Văn phòng không tồn tại"));
-        officeRepository.delete(office);
+    public void deleteOfficeById(Long id) {
+        Optional<Office> officeOptional = officeRepository.findById(id);
+        if (officeOptional.isEmpty()) {
+            throw new AppException(ErrorCode.OFFICE_NOT_FOUND);
+        }
+        officeRepository.deleteById(id);
     }
 
     public List<DTO_RP_OfficeName> getListOfficeNameByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+        }
         List<Office> offices = officeRepository.findByCompanyId(companyId);
+        if (offices.isEmpty()) {
+            throw new AppException(ErrorCode.OFFICES_NOT_FOUND);
+        }
         return offices.stream()
                 .map(OfficeMapper::toOfficeNameResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<DTO_RP_Office> getListOfficeByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+        }
+        List<Office> offices = officeRepository.findByCompanyId(companyId);
+        if (offices.isEmpty()) {
+            throw new AppException(ErrorCode.OFFICES_NOT_FOUND);
+        }
+        return offices.stream()
+                .map(OfficeMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 }
