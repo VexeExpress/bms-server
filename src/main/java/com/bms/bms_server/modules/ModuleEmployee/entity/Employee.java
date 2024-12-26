@@ -41,7 +41,7 @@ public class Employee {
     String password;
 
     @Column(name = "role")
-    Set<String> roles; // 1: Phụ xe, // 2: Tài xế, // 3: Nhân viên, // 4: Quản lý
+    Set<String> roles;
 
     @Column(name = "full_name")
     String fullName;
@@ -65,7 +65,7 @@ public class Employee {
     String address;
 
     @Column(name = "status")
-    Boolean status; // true: Hoạt động, // false: Khóa
+    Boolean status;
 
 
 

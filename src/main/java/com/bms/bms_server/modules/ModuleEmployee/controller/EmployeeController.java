@@ -25,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeController {
@@ -34,29 +35,126 @@ public class EmployeeController {
 
     // VIN-10: Add New Employee
     @PostMapping("/create")
-    public ApiResponse<DTO_RP_Employee> addNewEmployee(@RequestBody DTO_RQ_CreateEmployee dto) {
-        System.out.println(dto);
-       ApiResponse<DTO_RP_Employee> response = new ApiResponse<>();
-       response.setResult(employeeService.createEmployee(dto));
-       return response;
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<DTO_RP_Employee> addNewEmployee(@RequestBody DTO_RQ_CreateEmployee dto) {
+        var result = employeeService.createEmployee(dto);
+        return ApiResponse.<DTO_RP_Employee>builder()
+               .code(1000)
+               .message("Tạo nhân viên mới thành công")
+               .result(result)
+               .build();
+    }
+
+    // VIN-11: Update Employee Information
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<DTO_RP_Employee> updateEmployee(@PathVariable Long id, @RequestBody DTO_RQ_EditEmployee dto) {
+        var result = employeeService.updateEmployee(id, dto);
+        return ApiResponse.<DTO_RP_Employee>builder()
+                .code(1000)
+                .message("Cập nhật thông tin nhân viên thành công")
+                .result(result)
+                .build();
     }
 
     // VIN-12: Remove Employee
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteEmployee (@PathVariable Long id) {
-        if (id == null || id <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
-        }
-        try {
-            if (!employeeService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
-            }
-            employeeService.deleteEmployeeById(id);
-            return ResponseEntity.noContent().build(); // 204: Xóa thành công
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
-        }
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<Void> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployeeById(id);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Xoá nhân viên thành công")
+                .build();
     }
+
+    // VIN-13: Lock Account Employee
+    @PostMapping("/lock/{id}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<Void> lockAccountEmployee(@PathVariable Long id) {
+        employeeService.lockAccountEmployee(id);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Khoá tài khoản thành công")
+                .build();
+    }
+
+    // VIN-14: Change Password Account Employee
+    @PostMapping("/change-password/{id}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<Void> changePassAccountEmployee(@PathVariable Long id) {
+        employeeService.changePassAccountEmployee(id);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Mật khẩu mới của bạn là: 12345678")
+                .build();
+    }
+//    public ResponseEntity<Void> changePassAccountEmployee (@PathVariable Long id) {
+//        if (id == null || id <= 0) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
+//        }
+//        try {
+//            if (!employeeService.existsById(id)) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
+//            }
+//            employeeService.changePassAccountEmployee(id);
+//            return ResponseEntity.noContent().build(); // 204: Thay đổi mật khẩu thành công
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+//        }
+//    }
+
+//    public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
+//        if (id == null || id <= 0) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
+//        }
+//        try {
+//            if (!employeeService.existsById(id)) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
+//            }
+//            employeeService.lockAccountEmployee(id);
+//            return ResponseEntity.noContent().build(); // 204: Khóa thành công
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+//        }
+//    }
+
+    // VIN-17: Filter/Get Employee List
+    @GetMapping("/list-employee/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<List<DTO_RP_Employee>> getEmployeesByCompanyId_v2(@PathVariable("companyId") Long companyId) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+        return ApiResponse.<List<DTO_RP_Employee>>builder()
+                .code(1000)
+                .result(employeeService.getEmployeesByCompanyId(companyId))
+                .build();
+    }
+
+
+//    public ResponseEntity<Void> deleteEmployee (@PathVariable Long id) {
+//        if (id == null || id <= 0) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
+//        }
+//        try {
+//            if (!employeeService.existsById(id)) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
+//            }
+//            employeeService.deleteEmployeeById(id);
+//            return ResponseEntity.noContent().build(); // 204: Xóa thành công
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+//        }
+//    }
+
+
+
+
 
     // VIN-11: Update Employee Information
 //    @PutMapping("/update/{id}")
@@ -81,43 +179,9 @@ public class EmployeeController {
 //        }
 //    }
 
-    // VIN-13: Lock Account Employee
-    @PostMapping("/lock/{id}")
-    public ResponseEntity<Void> lockAccountEmployee (@PathVariable Long id) {
-        if (id == null || id <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
-        }
-        try {
-            if (!employeeService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
-            }
-            employeeService.lockAccountEmployee(id);
-            return ResponseEntity.noContent().build(); // 204: Khóa thành công
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
-        }
-    }
 
-    // UC_EM_05: Đặt lại mật khẩu mặc định “12345678”
-    @PostMapping("/change-pass/{id}")
-    public ResponseEntity<Void> changePassAccountEmployee (@PathVariable Long id) {
-        if (id == null || id <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
-        }
-        try {
-            if (!employeeService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: ID không tồn tại
-            }
-            employeeService.changePassAccountEmployee(id);
-            return ResponseEntity.noContent().build(); // 204: Thay đổi mật khẩu thành công
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build(); // 404: ID không tồn tại
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
-        }
-    }
+
+
 
     // UC_EM_06: Tìm kiếm nhân viên theo “tên”
     @GetMapping("/filter-by-name")
@@ -170,18 +234,7 @@ public class EmployeeController {
 //    }
 
 
-    @GetMapping("/list-employee/{companyId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    ApiResponse<List<DTO_RP_Employee>> getEmployeesByCompanyId_v2(@PathVariable("companyId") Long companyId) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        return ApiResponse.<List<DTO_RP_Employee>>builder()
-                .code(1000)
-                .result(employeeService.getEmployeesByCompanyId(companyId))
-                .build();
 
-    }
 
 //    @GetMapping("/list-driver/{companyId}")
 //    public ResponseEntity<List<DTO_RP_Driver>> getDriverByCompanyId(@PathVariable Long companyId) {

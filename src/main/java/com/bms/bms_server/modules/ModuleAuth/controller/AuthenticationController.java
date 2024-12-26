@@ -23,6 +23,7 @@ import static java.util.stream.Stream.builder;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
@@ -39,9 +40,8 @@ public class AuthenticationController {
                 .message("Đăng nhập thành công")
                 .result(result)
                 .build();
-
-
     }
+
     @PostMapping("/introspect")
     ApiResponse<DTO_RP_Introspect> introspect (@RequestBody DTO_RQ_Introspect dto) throws ParseException, JOSEException {
         var result = authService.introspect(dto);
@@ -56,6 +56,7 @@ public class AuthenticationController {
         authService.logout(dto);
         return ApiResponse.<Void>builder()
                 .code(1000)
+                .message("Đăng xuất thành công")
                 .build();
     }
 
@@ -66,8 +67,6 @@ public class AuthenticationController {
                 .code(1000)
                 .result(result)
                 .build();
-
-
     }
 
 //    @PostMapping("/login")
@@ -106,6 +105,16 @@ public class AuthenticationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
         }
+    }
+
+    @PostMapping("/register")
+    ApiResponse<Void> register(@RequestBody DTO_RQ_Register dto) {
+        authService.register(dto);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Gửi thông tin thành công")
+                .build();
+
     }
 
 }

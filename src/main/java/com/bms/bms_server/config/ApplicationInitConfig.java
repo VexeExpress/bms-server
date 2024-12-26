@@ -24,9 +24,9 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(EmployeeRepository employeeRepository){
         return args -> {
-            if (!employeeRepository.findByUsername("ADMIN").isEmpty()) {
+            if (!employeeRepository.findByUsername("ADMIN_APP").isEmpty()) {
                 var roles = new HashSet<String>();
-                roles.add(Role.ADMIN.name());
+                roles.add(Role.ADMIN_APP.name());
                 Employee employee = Employee.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))

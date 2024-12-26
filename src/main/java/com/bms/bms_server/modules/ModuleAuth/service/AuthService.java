@@ -147,6 +147,7 @@ public class AuthService {
     }
 
     public DTO_RP_Login login(DTO_RQ_Login dto) throws JOSEException {
+        System.out.println(dto);
         var employee = employeeRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         boolean authenticated = passwordEncoder.matches(dto.getPassword(), employee.getPassword());
@@ -227,5 +228,10 @@ public class AuthService {
             employee.getRoles().forEach(stringJoiner::add);
         }
         return stringJoiner.toString();
+    }
+
+    public void register(DTO_RQ_Register dto) {
+        System.out.println(dto);
+
     }
 }

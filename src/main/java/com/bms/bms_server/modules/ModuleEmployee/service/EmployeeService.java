@@ -38,6 +38,7 @@ public class EmployeeService {
 
 
     public DTO_RP_Employee createEmployee(DTO_RQ_CreateEmployee dto) {
+        System.out.println(dto);
         if (usernameExists(dto.getUsername(), dto.getCompanyId())) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
@@ -50,10 +51,9 @@ public class EmployeeService {
             }
             dto.setPassword(hashedPassword);
 
-            HashSet<String> roles = new HashSet<>();
-            roles.add(Role.EMPLOYEE.name());
-
-            dto.setRoles(roles);
+//            HashSet<String> roles = new HashSet<>();
+//
+//            dto.setRoles(roles);
 
             Employee employee = EmployeeMapper.toEntity(dto, company);
             Employee savedEmployee = employeeRepository.save(employee);
@@ -67,42 +67,15 @@ public class EmployeeService {
         return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
     }
 
-//    public void createEmployee(DTO_RQ_CreateEmployee dto) {
-//        try {
-//            // Kiểm tra sự tồn tại của công ty
-//            Company company = companyRepository.findById(dto.getCompanyId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Công ty không tồn tại"));
-//
-//            // Mã hóa mật khẩu
-//            String hashedPassword = passwordEncoder.encode(dto.getPassword());
-//
-//            // Nếu mã hóa thất bại, sẽ ném lỗi IllegalArgumentException
-//            if (hashedPassword == null || hashedPassword.isEmpty()) {
-//                throw new IllegalArgumentException("Mã hóa mật khẩu không thành công");
-//            }
-//
-//            // Cập nhật lại mật khẩu đã mã hóa vào DTO
-//            dto.setPassword(hashedPassword);
-//
-//            // Chuyển đổi DTO sang entity và lưu vào cơ sở dữ liệu
-//            Employee employee = EmployeeMapper.toEntity(dto, company);
-//            employeeRepository.save(employee);
-//
-//        } catch (IllegalArgumentException e) {
-//            // Lỗi do không tìm thấy công ty hoặc lỗi mã hóa mật khẩu
-//            throw new IllegalArgumentException("Lỗi xác thực dữ liệu");
-//        } catch (Exception e) {
-//            // Bắt các lỗi không xác định khác
-//            throw new RuntimeException("Đã xảy ra lỗi không xác định khi tạo nhân viên");
-//        }
-//    }
-
-
     public boolean existsById(Long id) {
         return employeeRepository.existsById(id);
     }
 
     public void deleteEmployeeById(Long id) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (employeeOptional.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
         System.out.println("Delete Employee ID: " + id);
         employeeRepository.deleteById(id);
     }
@@ -134,10 +107,9 @@ public class EmployeeService {
     }
 
     public void lockAccountEmployee(Long id) {
-        System.out.println("Lock Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
-            throw new IllegalArgumentException("Nhân viên không tồn tại.");
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         Employee employee = optionalEmployee.get();
         employee.setStatus(false);
@@ -148,7 +120,7 @@ public class EmployeeService {
         System.out.println("Change Pass Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
-            throw new IllegalArgumentException("Nhân viên không tồn tại.");
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         Employee employee = optionalEmployee.get();
         employee.setPassword(passwordEncoder.encode("12345678"));
