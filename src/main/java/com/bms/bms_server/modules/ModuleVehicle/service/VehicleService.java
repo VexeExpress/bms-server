@@ -11,6 +11,9 @@ import com.bms.bms_server.modules.ModuleVehicle.mapper.VehicleMapper;
 import com.bms.bms_server.modules.ModuleCompany.repository.CompanyRepository;
 import com.bms.bms_server.modules.ModuleVehicle.repository.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleService {
     @Autowired
     VehicleRepository vehicleRepository;
