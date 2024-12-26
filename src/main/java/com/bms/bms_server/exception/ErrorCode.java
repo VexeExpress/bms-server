@@ -27,6 +27,12 @@ public enum ErrorCode {
     OFFICE_EXISTED(103, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
     OFFICE_NAME_REQUIRED(104, "Vui lòng cung cấp tên văn phòng", HttpStatus.BAD_REQUEST),
 
+    VEHICLES_NOT_FOUND(201, "Không tìm thấy danh sách phương tiện", HttpStatus.NOT_FOUND),
+    VEHICLE_NOT_FOUND(202, "Không tìm thấy thông tin phương tiện", HttpStatus.NOT_FOUND),
+    VEHICLE_EXISTED(203, "Phương tiện đã tồn tại", HttpStatus.CONFLICT),
+    VEHICLE_LICENSE_PLATE_REQUIRED(204, "Vui lòng cung cấp biển số xe", HttpStatus.BAD_REQUEST),
+
+
     ;
 //        2xx: Thành công.
 //        3xx: Chuyển hướng.
