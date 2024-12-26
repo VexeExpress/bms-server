@@ -89,6 +89,20 @@ public class EmployeeController {
                 .message("Mật khẩu mới của bạn là: 12345678")
                 .build();
     }
+
+    // VIN-17: Filter/Get Employee List
+    @GetMapping("/list-employee/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<List<DTO_RP_Employee>> getEmployeesByCompanyId_v2(@PathVariable("companyId") Long companyId) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+        return ApiResponse.<List<DTO_RP_Employee>>builder()
+                .code(1000)
+                .result(employeeService.getEmployeesByCompanyId(companyId))
+                .build();
+    }
+
 //    public ResponseEntity<Void> changePassAccountEmployee (@PathVariable Long id) {
 //        if (id == null || id <= 0) {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400: ID không hợp lệ
@@ -123,18 +137,7 @@ public class EmployeeController {
 //        }
 //    }
 
-    // VIN-17: Filter/Get Employee List
-    @GetMapping("/list-employee/{companyId}")
-    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
-    ApiResponse<List<DTO_RP_Employee>> getEmployeesByCompanyId_v2(@PathVariable("companyId") Long companyId) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        return ApiResponse.<List<DTO_RP_Employee>>builder()
-                .code(1000)
-                .result(employeeService.getEmployeesByCompanyId(companyId))
-                .build();
-    }
+
 
 
 //    public ResponseEntity<Void> deleteEmployee (@PathVariable Long id) {
@@ -184,21 +187,21 @@ public class EmployeeController {
 
 
     // UC_EM_06: Tìm kiếm nhân viên theo “tên”
-    @GetMapping("/filter-by-name")
-    public ResponseEntity<List<DTO_RP_Employee>> searchEmployeesByName(
-            @RequestParam("fullName") String fullName,
-            @RequestParam("companyId") Long companyId) {
-
-        try {
-            List<DTO_RP_Employee> employees = employeeService.searchEmployeesByName(fullName, companyId);
-            if (employees.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy nhân viên
-            }
-            return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
-        }
-    }
+//    @GetMapping("/filter-by-name")
+//    public ResponseEntity<List<DTO_RP_Employee>> searchEmployeesByName(
+//            @RequestParam("fullName") String fullName,
+//            @RequestParam("companyId") Long companyId) {
+//
+//        try {
+//            List<DTO_RP_Employee> employees = employeeService.searchEmployeesByName(fullName, companyId);
+//            if (employees.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404: Không tìm thấy nhân viên
+//            }
+//            return ResponseEntity.ok(employees); // 200: Trả về danh sách nhân viên
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500: Lỗi hệ thống
+//        }
+//    }
 
     // UC_EM_07: Lọc nhân viên theo “vai trò”
 //    @GetMapping("/filter-by-role")
