@@ -8,6 +8,7 @@ import com.bms.bms_server.modules.ModuleEmployee.dto.DTO_RP_Employee;
 import com.bms.bms_server.modules.ModuleEmployee.service.EmployeeService;
 import com.bms.bms_server.utils.ApiResponse;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
-    // VIN-10: Add New Employee
+    // PB.01_US.01: Add New Employee
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Employee> addNewEmployee(@RequestBody DTO_RQ_CreateEmployee dto) {
@@ -45,7 +46,7 @@ public class EmployeeController {
                .build();
     }
 
-    // VIN-11: Update Employee Information
+    // PB.01_US.02: Update Employee Information
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Employee> updateEmployee(@PathVariable Long id, @RequestBody DTO_RQ_EditEmployee dto) {
@@ -57,10 +58,10 @@ public class EmployeeController {
                 .build();
     }
 
-    // VIN-12: Remove Employee
+    // PB.01_US.03: Remove Employee
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
-    ApiResponse<Void> deleteEmployee(@PathVariable Long id) {
+    ApiResponse<Void> deleteEmployee(@PathVariable("id") Long id) {
         employeeService.deleteEmployeeById(id);
         return ApiResponse.<Void>builder()
                 .code(1000)
@@ -68,7 +69,7 @@ public class EmployeeController {
                 .build();
     }
 
-    // VIN-13: Lock Account Employee
+    // PB.01_US.04: Lock Account Employee
     @PostMapping("/lock/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> lockAccountEmployee(@PathVariable Long id) {
@@ -79,7 +80,7 @@ public class EmployeeController {
                 .build();
     }
 
-    // VIN-14: Change Password Account Employee
+    // PB.01_US.05: Change Password Account Employee
     @PostMapping("/change-password/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> changePassAccountEmployee(@PathVariable Long id) {
@@ -90,17 +91,43 @@ public class EmployeeController {
                 .build();
     }
 
-    // VIN-17: Filter/Get Employee List
+    // PB.01_US.06: Filter/Get Employee List
     @GetMapping("/list-employee/{companyId}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<List<DTO_RP_Employee>> getEmployeesByCompanyId_v2(@PathVariable("companyId") Long companyId) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+        var result = employeeService.getEmployeesByCompanyId(companyId);
         return ApiResponse.<List<DTO_RP_Employee>>builder()
                 .code(1000)
                 .message("Tải dữ liệu thành công")
-                .result(employeeService.getEmployeesByCompanyId(companyId))
+                .result(result)
+                .build();
+    }
+
+    // PB.01_US.07: Filter/Get List Employee Role Driver
+    @GetMapping("/list-driver-name/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    ApiResponse<List<DTO_RP_Driver>> getDriverNameByCompanyId(@PathVariable("companyId") Long companyId) {
+        var result = employeeService.getDriverNameByCompanyId(companyId);
+        return ApiResponse.<List<DTO_RP_Driver>>builder()
+                .code(1000)
+                .message("Tải dữ liệu thành công")
+                .result(result)
+                .build();
+    }
+
+
+    // PB.01_US.08: Filter/Get List Employee Role Assistant
+    @GetMapping("/list-assistant-name/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    ApiResponse<List<DTO_RP_Assistant>> getAssistantNameByCompanyId(@PathVariable("companyId") Long companyId) {
+        var result = employeeService.getAssistantNameByCompanyId(companyId);
+        return ApiResponse.<List<DTO_RP_Assistant>>builder()
+                .code(1000)
+                .message("Tải dữ liệu thành công")
+                .result(result)
                 .build();
     }
 

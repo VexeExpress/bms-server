@@ -36,55 +36,48 @@ public class EmployeeService {
     CompanyRepository companyRepository;
     PasswordEncoder passwordEncoder;
 
-
+    // PB.01_US.01: Add New Employee
     public DTO_RP_Employee createEmployee(DTO_RQ_CreateEmployee dto) {
         System.out.println(dto);
+        if (dto.getUsername() == null || dto.getUsername().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_USERNAME);
+        }
+        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
+        }
+        if (dto.getFullName() == null || dto.getFullName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_FULL_NAME);
+        }
+        if (dto.getCompanyId() == null) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        Company company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
         if (usernameExists(dto.getUsername(), dto.getCompanyId())) {
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
+            throw new AppException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
-        try {
-            Company company = companyRepository.findById(dto.getCompanyId())
-                    .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
-            String hashedPassword = passwordEncoder.encode(dto.getPassword());
-            if (hashedPassword == null || hashedPassword.isEmpty()) {
-                throw new AppException(ErrorCode.PASSWORD_ENCRYPTION_FAILED);
-            }
-            dto.setPassword(hashedPassword);
-
-//            HashSet<String> roles = new HashSet<>();
-//
-//            dto.setRoles(roles);
-
-            Employee employee = EmployeeMapper.toEntity(dto, company);
-            Employee savedEmployee = employeeRepository.save(employee);
-            return EmployeeMapper.toDTO(savedEmployee);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        if (hashedPassword == null || hashedPassword.isEmpty()) {
+            throw new AppException(ErrorCode.PASSWORD_ENCRYPTION_FAILED);
         }
+        dto.setPassword(hashedPassword);
+        Employee employee = EmployeeMapper.toEntity(dto, company);
+        Employee savedEmployee = employeeRepository.save(employee);
+        return EmployeeMapper.toDTO(savedEmployee);
     }
 
-    public boolean usernameExists(String username, Long companyId) {
-        return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
-    }
-
-    public boolean existsById(Long id) {
-        return employeeRepository.existsById(id);
-    }
-
-    public void deleteEmployeeById(Long id) {
-        Optional<Employee> employeeOptional = employeeRepository.findById(id);
-        if (employeeOptional.isEmpty()) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-        System.out.println("Delete Employee ID: " + id);
-        employeeRepository.deleteById(id);
-    }
-
+    // PB.01_US.02: Update Employee Information
     public DTO_RP_Employee updateEmployee(Long id, DTO_RQ_EditEmployee dto) {
-        System.out.println("Update Employee ID: " + id);
-        System.out.println("Update Employee: " + dto);
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if (dto.getFullName() == null || dto.getFullName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_FULL_NAME);
+        }
+        if (dto.getCompanyId() == null) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
 
         employee.setFullName(dto.getFullName());
         employee.setStartDate(dto.getStartDate());
@@ -99,33 +92,98 @@ public class EmployeeService {
         employee.setAccessCms(dto.getAccessCms());
         employee.setAccessBms(dto.getAccessBms());
 
-        // Lưu cập nhật vào cơ sở dữ liệu
         employeeRepository.save(employee);
 
-        // Chuyển đổi entity sang DTO để trả về
         return EmployeeMapper.toDTO(employee);
     }
 
+    // PB.01_US.03: Remove Employee
+    public void deleteEmployeeById(Long id) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (employeeOptional.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        employeeRepository.deleteById(id);
+    }
+
+    // PB.01_US.04: Lock Account Employee
     public void lockAccountEmployee(Long id) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         Employee employee = optionalEmployee.get();
         employee.setStatus(false);
         employeeRepository.save(employee);
     }
 
+    // PB.01_US.05: Change Password Account Employee
     public void changePassAccountEmployee(Long id) {
-        System.out.println("Change Pass Account Employee ID: " + id);
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if (optionalEmployee.isEmpty()) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         Employee employee = optionalEmployee.get();
         employee.setPassword(passwordEncoder.encode("12345678"));
         employeeRepository.save(employee);
     }
+
+    // PB.01_US.06: Filter/Get Employee List
+    public List<DTO_RP_Employee> getEmployeesByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream()
+                .map(EmployeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // PB.01_US.07: Filter/Get List Employee Role Driver
+    public List<DTO_RP_Driver> getDriverNameByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream()
+                .filter(employee -> employee.getStatus() && employee.getRoles() != null && employee.getRoles().contains("DRIVER"))
+                .map(EmployeeMapper::toDriverResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    // PB.01_US.08: Filter/Get List Employee Role Assistant
+    public List<DTO_RP_Assistant> getAssistantNameByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
+        return employees.stream()
+                .filter(employee -> employee.getStatus() && employee.getRoles() != null && employee.getRoles().contains("ASSISTANT"))
+                .map(EmployeeMapper::toAssistantResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public boolean usernameExists(String username, Long companyId) {
+        return employeeRepository.existsByUsernameAndCompanyId(username, companyId);
+    }
+
+
+
+
+
+
+
+
+
+
 //
 //    public List<DTO_RP_Employee> getEmployeesByCompanyId(Long companyId) {
 //        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
@@ -135,25 +193,14 @@ public class EmployeeService {
 //    }
 
 
-    public List<DTO_RP_Employee> searchEmployeesByName(String fullName, Long companyId) {
-        List<Employee> employees = employeeRepository.findByFullNameContainingAndCompanyId(fullName, companyId);
-        return employees.stream()
-                .map(EmployeeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+//    public List<DTO_RP_Employee> searchEmployeesByName(String fullName, Long companyId) {
+//        List<Employee> employees = employeeRepository.findByFullNameContainingAndCompanyId(fullName, companyId);
+//        return employees.stream()
+//                .map(EmployeeMapper::toDTO)
+//                .collect(Collectors.toList());
+//    }
 
-    public List<DTO_RP_Employee> getEmployeesByCompanyId(Long companyId) {
-        if (companyId == null || companyId <= 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
-        }
-        List<Employee> employees = employeeRepository.findByCompanyId(companyId);
-        if (employees.isEmpty()) {
-            throw new AppException(ErrorCode.NO_EMPLOYEES_FOUND);
-        }
-        return employees.stream()
-                .map(EmployeeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+
 
 
 //    public List<DTO_RP_Employee> searchEmployeesByRole(Integer role, Long companyId) {

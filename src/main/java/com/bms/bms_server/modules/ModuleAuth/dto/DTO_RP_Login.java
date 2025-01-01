@@ -10,5 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DTO_RP_Login {
     String token;
+    String fullName;
+    String companyName;
+    Long employeeId;
+    Long companyId;
     Boolean authenticated;
 }

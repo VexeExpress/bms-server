@@ -158,6 +158,10 @@ public class AuthService {
         return DTO_RP_Login.builder()
                 .token(token)
                 .authenticated(true)
+                .employeeId(employee.getId())
+                .fullName(employee.getFullName())
+                .companyName(employee.getCompany().getCompanyName())
+                .companyId(employee.getCompany().getId())
                 .build();
     }
 

@@ -5,6 +5,9 @@ import com.bms.bms_server.modules.ModuleSeat.dto.DTO_RP_SeatingChartName;
 import com.bms.bms_server.modules.ModuleSeat.dto.DTO_RQ_SeatingChart;
 import com.bms.bms_server.modules.ModuleSeat.dto.DTO_RP_SeatingChart;
 import com.bms.bms_server.modules.ModuleSeat.service.SeatingChartService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/seating-chart")
+@RequestMapping("/api/seat")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeatingChartController {
     @Autowired
     SeatingChartService seatingChartService;
