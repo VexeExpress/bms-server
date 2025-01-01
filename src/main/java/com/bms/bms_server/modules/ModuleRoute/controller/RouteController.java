@@ -26,7 +26,7 @@ public class RouteController {
     @Autowired
     RouteService routeService;
 
-    // VIN-30: Add New Route
+    // PB.04_US.01: Add new route
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Route> addNewRoute(@RequestBody DTO_RQ_Route dto) {
@@ -38,7 +38,7 @@ public class RouteController {
                 .build();
     }
 
-    // VIN-31: Filter/Get List Route
+    // PB.04_US.02: Filter/Get list route
     @GetMapping("/list-route/{companyId}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<List<DTO_RP_Route>> getListRouteByCompanyId(@PathVariable Long companyId) {
@@ -50,9 +50,9 @@ public class RouteController {
                 .build();
     }
 
-    // VIN-32: Filter/Get List Name Route
+    // PB.04_US.03: Filter/Get list route name
     @GetMapping("/list-route-name/{companyId}")
-    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
     ApiResponse<List<DTO_RP_RouteName>> getRouteNameByCompanyId(@PathVariable Long companyId) {
         var result = routeService.getListRouteNameByCompanyId(companyId);
         return ApiResponse.<List<DTO_RP_RouteName>>builder()
@@ -62,7 +62,7 @@ public class RouteController {
                 .build();
     }
 
-    // VIN-33: Update Route Information
+    // PB.04_US.04: Update route information
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Route> updateRoute(@PathVariable Long id, @RequestBody DTO_RQ_Route dto) {
@@ -74,7 +74,7 @@ public class RouteController {
                 .build();
     }
 
-    // VIN-34: Remove Route
+    // PB.04_US.05: Remove route
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> deleteRoute(@PathVariable Long id) {
@@ -85,7 +85,7 @@ public class RouteController {
                 .build();
     }
 
-    // VIN-35: Move Route Display Order
+    // PB.04_US.06: Move route display order
     @PostMapping("/move-order-top/{routeId}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> moveRouteToTop(@PathVariable Long routeId) {
@@ -95,6 +95,7 @@ public class RouteController {
                 .message("Di chuyển vị trí thành công")
                 .build();
     }
+
 
 
 //    public ResponseEntity<DTO_RP_Route> createRoute(@RequestBody DTO_RQ_Route dto) {

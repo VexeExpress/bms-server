@@ -44,16 +44,13 @@ public enum ErrorCode {
     VEHICLE_ALREADY_EXISTED(302, "Phương tiện đã tồn tại", HttpStatus.CONFLICT),
     VEHICLE_NOT_FOUND(303, "Dữ liệu phương tiện không tồn tại", HttpStatus.NOT_FOUND),
 
-
-    OFFICE_EXISTED(403, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
-    OFFICE_NAME_REQUIRED(304, "Vui lòng cung cấp tên văn phòng", HttpStatus.BAD_REQUEST),
-
-    VEHICLES_NOT_FOUND(201, "Không tìm thấy danh sách phương tiện", HttpStatus.NOT_FOUND),
-
-
-    VEHICLE_LICENSE_PLATE_REQUIRED(204, "Vui lòng cung cấp biển số xe", HttpStatus.BAD_REQUEST),
-
-
+    // PB.04: Route
+    INVALID_ROUTE_NAME(401, "Vui lòng cung cấp tên tuyến", HttpStatus.BAD_REQUEST),
+    INVALID_DISPLAY_PRICE(402, "Vui lòng cung cấp giá tuyến cơ bản", HttpStatus.BAD_REQUEST),
+    ROUTE_ALREADY_EXISTED(403, "Tuyến đã tồn tại", HttpStatus.CONFLICT),
+    ROUTE_NOT_FOUND(404, "Dữ liệu tuyến không tồn tại", HttpStatus.NOT_FOUND),
+    ROUTE_ALREADY_AT_TOP(405, "Tuyến đường đã ở vị trí cao nhất, không thể di chuyển lên.", HttpStatus.BAD_REQUEST),
+    INCONSISTENT_DISPLAY_ORDER(406, "Thứ tự hiển thị của các tuyến đường không đồng bộ.", HttpStatus.CONFLICT);
     ;
 //        2xx: Thành công.
 //        3xx: Chuyển hướng.
