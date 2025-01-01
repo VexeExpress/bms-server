@@ -28,19 +28,7 @@ public class OfficeController {
     @Autowired
     OfficeService officeService;
 
-    // VIN-23: Filter/Get List Office
-    @GetMapping("/list-office/{companyId}")
-    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
-    ApiResponse<List<DTO_RP_Office>> getListOfficeByCompanyId(@PathVariable("companyId") Long companyId) {
-        var result = officeService.getListOfficeByCompanyId(companyId);
-        return ApiResponse.<List<DTO_RP_Office>>builder()
-                .code(1000)
-                .message("Tải dữ liệu thành công")
-                .result(result)
-                .build();
-    }
-
-    // VIN-20: Add New Office
+    // PB.02_US.01: Add new office
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Office> addNewOffice(@RequestBody DTO_RQ_Office dto) {
@@ -52,7 +40,7 @@ public class OfficeController {
                 .build();
     }
 
-    // VIN-21: Update Office Information
+    // PB.02_US.02: Update office information
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Office> updateOffice(@PathVariable Long id, @RequestBody DTO_RQ_Office dto){
@@ -64,7 +52,7 @@ public class OfficeController {
                 .build();
     }
 
-    // VIN-22: Remove Office
+    // PB.02_US.03: Remove office
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> deleteOffice(@PathVariable Long id) {
@@ -75,7 +63,19 @@ public class OfficeController {
                 .build();
     }
 
-    // VIN-29: Filter/Get List Name Office
+    // PB.02_US.04: Filter/Get list office
+    @GetMapping("/list-office/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<List<DTO_RP_Office>> getListOfficeByCompanyId(@PathVariable("companyId") Long companyId) {
+        var result = officeService.getListOfficeByCompanyId(companyId);
+        return ApiResponse.<List<DTO_RP_Office>>builder()
+                .code(1000)
+                .message("Tải dữ liệu thành công")
+                .result(result)
+                .build();
+    }
+
+    // PB.02_US.05: Filter/Get list office name
     @GetMapping("/list-office-name/{companyId}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
     ApiResponse<List<DTO_RP_OfficeName>> getListOfficeNameByCompanyId(@PathVariable Long companyId) {
@@ -86,6 +86,10 @@ public class OfficeController {
                 .result(result)
                 .build();
     }
+
+
+
+
 
 
    /// @PostMapping("/create")

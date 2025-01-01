@@ -30,41 +30,44 @@ public class OfficeService {
     @Autowired
     CompanyRepository companyRepository;
 
+    // PB.02_US.01: Add new office
     public DTO_RP_Office createOffice(DTO_RQ_Office dto) {
-        System.out.println(dto);
         if (dto.getCompanyId() == null) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
-        if (dto.getOfficeName() == null || dto.getOfficeName().trim().isEmpty()) {
-            throw new AppException(ErrorCode.OFFICE_NAME_REQUIRED);
+        if (dto.getOfficeName() == null || dto.getOfficeName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_OFFICE_NAME);
         }
         Company company = companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
         boolean exists = officeRepository.existsByCompanyAndOfficeName(company, dto.getOfficeName());
         if (exists) {
-            throw new AppException(ErrorCode.OFFICE_EXISTED);
+            throw new AppException(ErrorCode.OFFICE_ALREADY_EXISTED);
         }
         Office office = OfficeMapper.toEntity(dto, company);
         Office savedOffice = officeRepository.save(office);
-        System.out.println("Saved Office: " + savedOffice);
         return OfficeMapper.toResponseDTO(savedOffice);
     }
 
-    public DTO_RP_Office updateOffice(Long officeId, DTO_RQ_Office updatedData) {
-        System.out.println(updatedData);
+    // PB.02_US.02: Update office information
+    public DTO_RP_Office updateOffice(Long officeId, DTO_RQ_Office dto) {
         Office office = officeRepository.findById(officeId)
                 .orElseThrow(() -> new AppException(ErrorCode.OFFICE_NOT_FOUND));
-        if (updatedData.getOfficeName() != null) {
-            office.setOfficeName(updatedData.getOfficeName());
-            office.setOfficeCode(updatedData.getOfficeCode());
-            office.setAddress(updatedData.getAddress());
-            office.setPhone(updatedData.getPhone());
-            office.setStatus(updatedData.getStatus());
+        if (dto.getOfficeName() == null || dto.getOfficeName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_OFFICE_NAME);
         }
+
+        office.setOfficeName(dto.getOfficeName());
+        office.setOfficeCode(dto.getOfficeCode());
+        office.setAddress(dto.getAddress());
+        office.setPhone(dto.getPhone());
+        office.setStatus(dto.getStatus());
+
         Office updatedOffice = officeRepository.save(office);
         return OfficeMapper.toResponseDTO(updatedOffice);
     }
 
+    // PB.02_US.03: Remove office
     public void deleteOfficeById(Long id) {
         Optional<Office> officeOptional = officeRepository.findById(id);
         if (officeOptional.isEmpty()) {
@@ -73,29 +76,34 @@ public class OfficeService {
         officeRepository.deleteById(id);
     }
 
-    public List<DTO_RP_OfficeName> getListOfficeNameByCompanyId(Long companyId) {
-        if (companyId == null || companyId <= 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
-        }
-        List<Office> offices = officeRepository.findByCompanyId(companyId);
-        if (offices.isEmpty()) {
-            throw new AppException(ErrorCode.OFFICES_NOT_FOUND);
-        }
-        return offices.stream()
-                .map(OfficeMapper::toOfficeNameResponseDTO)
-                .collect(Collectors.toList());
-    }
-
+    // PB.02_US.04: Filter/Get list office
     public List<DTO_RP_Office> getListOfficeByCompanyId(Long companyId) {
         if (companyId == null || companyId <= 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
         List<Office> offices = officeRepository.findByCompanyId(companyId);
-        if (offices.isEmpty()) {
-            throw new AppException(ErrorCode.OFFICES_NOT_FOUND);
-        }
         return offices.stream()
                 .map(OfficeMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    // PB.02_US.05: Filter/Get list office name
+    public List<DTO_RP_OfficeName> getListOfficeNameByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
+        List<Office> offices = officeRepository.findByCompanyId(companyId);
+        return offices.stream()
+                .filter(Office::getStatus)
+                .map(OfficeMapper::toOfficeNameResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }

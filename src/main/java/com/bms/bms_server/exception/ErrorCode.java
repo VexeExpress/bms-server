@@ -34,9 +34,13 @@ public enum ErrorCode {
     USER_NOT_FOUND(106, "Dữ liệu người dùng không tồn tại", HttpStatus.NOT_FOUND),
     INVALID_EMPLOYEE_ID(107, "Vui lòng cung cấp thông tin người dùng", HttpStatus.BAD_REQUEST),
 
+    // PB.02: Office
+    INVALID_OFFICE_NAME(201, "Vui lòng cung cấp tên văn phòng", HttpStatus.BAD_REQUEST),
+    OFFICE_ALREADY_EXISTED(202, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
+    OFFICE_NOT_FOUND(203, "Dữ liệu văn phòng không tồn tại", HttpStatus.NOT_FOUND),
 
     OFFICES_NOT_FOUND(301, "Không tìm thấy danh sách văn phòng", HttpStatus.NOT_FOUND),
-    OFFICE_NOT_FOUND(402, "Không tìm thấy thông tin văn phòng", HttpStatus.NOT_FOUND),
+
     OFFICE_EXISTED(403, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
     OFFICE_NAME_REQUIRED(304, "Vui lòng cung cấp tên văn phòng", HttpStatus.BAD_REQUEST),
 
