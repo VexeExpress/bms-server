@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,63 +30,80 @@ public class VehicleService {
     @Autowired
     CompanyRepository companyRepository;
 
-
+    // PB.03_US.01: Add new vehicle
     public DTO_RP_Vehicle createVehicle(DTO_RQ_Vehicle dto) {
-        if (dto.getLicensePlate() == null || dto.getLicensePlate().trim().isEmpty()) {
-            throw new AppException(ErrorCode.VEHICLE_LICENSE_PLATE_REQUIRED);
+        if (dto.getLicensePlate() == null || dto.getLicensePlate().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_LICENSE_PLATE);
         }
         Company company = companyRepository.findById(dto.getCompanyId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
         boolean exists = vehicleRepository.existsByCompanyAndLicensePlate(company, dto.getLicensePlate());
         if (exists) {
-            throw new AppException(ErrorCode.VEHICLE_EXISTED);
+            throw new AppException(ErrorCode.VEHICLE_ALREADY_EXISTED);
         }
+
         Vehicle vehicle = VehicleMapper.toEntity(dto, company);
         Vehicle saved = vehicleRepository.save(vehicle);
         return VehicleMapper.toResponseDTO(saved);
     }
 
+    // PB.03_US.02: Filter/Get Vehicle List
     public List<DTO_RP_Vehicle> getListVehicleByCompanyId(Long companyId) {
         if (companyId == null || companyId <= 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
         List<Vehicle> vehicles = vehicleRepository.findByCompanyId(companyId);
-        if (vehicles.isEmpty()) {
-            throw new AppException(ErrorCode.VEHICLES_NOT_FOUND);
-        }
         return vehicles.stream().map(VehicleMapper::toResponseDTO).collect(Collectors.toList());
     }
 
-    public DTO_RP_Vehicle updateVehicle(Long vehicleId, DTO_RQ_Vehicle updatedData) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
-        if (updatedData.getLicensePlate() != null) {
-            vehicle.setLicensePlate(updatedData.getLicensePlate());
-            vehicle.setNote(updatedData.getNote());
-            vehicle.setPhone(updatedData.getPhone());
-            vehicle.setTypeVehicle(updatedData.getTypeVehicle());
-            vehicle.setRegistrationPeriod(updatedData.getRegistrationPeriod());
-            vehicle.setStatus(updatedData.getStatus());
-            vehicle.setColor(updatedData.getColor());
-            vehicle.setMaintenancePeriod(updatedData.getMaintenancePeriod());
-            vehicle.setBrand(updatedData.getBrand());
+    // PB.03_US.03: Update vehicle information
+    public DTO_RP_Vehicle updateVehicle(Long vehicleId, DTO_RQ_Vehicle dto) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
+        if (dto.getLicensePlate() == null || dto.getLicensePlate().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_LICENSE_PLATE);
         }
+        if (dto.getCompanyId() == null) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
+        vehicle.setLicensePlate(dto.getLicensePlate());
+        vehicle.setNote(dto.getNote());
+        vehicle.setPhone(dto.getPhone());
+        vehicle.setTypeVehicle(dto.getTypeVehicle());
+        vehicle.setRegistrationPeriod(dto.getRegistrationPeriod());
+        vehicle.setStatus(dto.getStatus());
+        vehicle.setColor(dto.getColor());
+        vehicle.setMaintenancePeriod(dto.getMaintenancePeriod());
+        vehicle.setBrand(dto.getBrand());
+
         Vehicle updateVehicle = vehicleRepository.save(vehicle);
         return VehicleMapper.toResponseDTO(updateVehicle);
     }
 
+    // PB.03_US.04: Remove vehicle
     public void deleteVehicleById(Long vehicleId) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_FOUND));
-        vehicleRepository.delete(vehicle);
+        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(vehicleId);
+        if (vehicleOptional.isEmpty()) {
+            throw new AppException(ErrorCode.VEHICLE_NOT_FOUND);
+        }
+        vehicleRepository.deleteById(vehicleId);
     }
 
+    // PB.03_US.05: Filter/Get list of license plates
     public List<DTO_RP_LicensePlate> getLicensePlateVehicleByCompanyId(Long companyId) {
         if (companyId == null || companyId <= 0) {
-            throw new AppException(ErrorCode.COMPANY_NOT_EXIST);
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+
         List<Vehicle> vehicles = vehicleRepository.findByCompanyId(companyId);
-        if (vehicles.isEmpty()) {
-            throw new AppException(ErrorCode.VEHICLES_NOT_FOUND);
-        }
         return vehicles.stream()
                 .filter(vehicle -> vehicle.getStatus() == 1)
                 .map(VehicleMapper::toResponseLicenseDTO)

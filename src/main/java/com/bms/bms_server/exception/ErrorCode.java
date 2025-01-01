@@ -39,14 +39,18 @@ public enum ErrorCode {
     OFFICE_ALREADY_EXISTED(202, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
     OFFICE_NOT_FOUND(203, "Dữ liệu văn phòng không tồn tại", HttpStatus.NOT_FOUND),
 
-    OFFICES_NOT_FOUND(301, "Không tìm thấy danh sách văn phòng", HttpStatus.NOT_FOUND),
+    // PB.03: Vehicle
+    INVALID_LICENSE_PLATE(301, "Vui lòng cung cấp biển số xe", HttpStatus.BAD_REQUEST),
+    VEHICLE_ALREADY_EXISTED(302, "Phương tiện đã tồn tại", HttpStatus.CONFLICT),
+    VEHICLE_NOT_FOUND(303, "Dữ liệu phương tiện không tồn tại", HttpStatus.NOT_FOUND),
+
 
     OFFICE_EXISTED(403, "Văn phòng đã tồn tại", HttpStatus.CONFLICT),
     OFFICE_NAME_REQUIRED(304, "Vui lòng cung cấp tên văn phòng", HttpStatus.BAD_REQUEST),
 
     VEHICLES_NOT_FOUND(201, "Không tìm thấy danh sách phương tiện", HttpStatus.NOT_FOUND),
-    VEHICLE_NOT_FOUND(202, "Không tìm thấy thông tin phương tiện", HttpStatus.NOT_FOUND),
-    VEHICLE_EXISTED(203, "Phương tiện đã tồn tại", HttpStatus.CONFLICT),
+
+
     VEHICLE_LICENSE_PLATE_REQUIRED(204, "Vui lòng cung cấp biển số xe", HttpStatus.BAD_REQUEST),
 
 

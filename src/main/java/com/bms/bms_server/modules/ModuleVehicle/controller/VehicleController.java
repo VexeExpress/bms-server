@@ -28,19 +28,7 @@ public class VehicleController {
     @Autowired
     VehicleService vehicleService;
 
-    // VIN-37: Filter/Get List Vehicle
-    @GetMapping("/list-vehicle/{companyId}")
-    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
-    ApiResponse<List<DTO_RP_Vehicle>> getListVehicleByCompanyId(@PathVariable Long companyId) {
-        var result = vehicleService.getListVehicleByCompanyId(companyId);
-        return ApiResponse.<List<DTO_RP_Vehicle>>builder()
-                .code(1000)
-                .message("Tải dữ liệu thành công")
-                .result(result)
-                .build();
-    }
-
-    // VIN-36: Add New Vehicle
+    // PB.03_US.01: Add new vehicle
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Vehicle> addNewVehicle(@RequestBody DTO_RQ_Vehicle dto) {
@@ -52,7 +40,19 @@ public class VehicleController {
                 .build();
     }
 
-    // VIN-38: Update Vehicle Information
+    // PB.03_US.02: Filter/Get Vehicle List
+    @GetMapping("/list-vehicle/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
+    ApiResponse<List<DTO_RP_Vehicle>> getListVehicleByCompanyId(@PathVariable Long companyId) {
+        var result = vehicleService.getListVehicleByCompanyId(companyId);
+        return ApiResponse.<List<DTO_RP_Vehicle>>builder()
+                .code(1000)
+                .message("Tải dữ liệu thành công")
+                .result(result)
+                .build();
+    }
+
+    // PB.03_US.03: Update vehicle information
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<DTO_RP_Vehicle> updateVehicle(@PathVariable Long id, @RequestBody DTO_RQ_Vehicle dto) {
@@ -64,7 +64,7 @@ public class VehicleController {
                 .build();
     }
 
-    // VIN-39: Remove Vehicle
+    // PB.03_US.04: Remove vehicle
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN')")
     ApiResponse<Void> deleteVehicle(@PathVariable Long id) {
@@ -75,17 +75,19 @@ public class VehicleController {
                 .build();
     }
 
-    // VIN-40: Filter/Get List of License Plates
+    // PB.03_US.05: Filter/Get list of license plates
     @GetMapping("/list-license-plate/{companyId}")
     @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    ApiResponse<List<DTO_RP_LicensePlate>> getLicensePlateVehicleByCompanyId(@PathVariable Long id) {
-        var result = vehicleService.getLicensePlateVehicleByCompanyId(id);
+    ApiResponse<List<DTO_RP_LicensePlate>> getLicensePlateVehicleByCompanyId(@PathVariable Long companyId) {
+        var result = vehicleService.getLicensePlateVehicleByCompanyId(companyId);
         return ApiResponse.<List<DTO_RP_LicensePlate>>builder()
                 .code(1000)
                 .message("Tải dữ liệu thành công")
                 .result(result)
                 .build();
     }
+
+
 
 //    @GetMapping("/list-vehicle/{companyId}")
 //    public ResponseEntity<List<DTO_RP_Vehicle>> getListVehicleByCompanyId(@PathVariable Long companyId) {
