@@ -78,12 +78,12 @@ public class TripService {
             Ticket ticket = new Ticket();
             ticket.setCompany(company);
             ticket.setTrip(savedTrip);
-            ticket.setTicketFloor(seat.getFloor());
-            ticket.setTicketRow(seat.getRow());
-            ticket.setTicketColumn(seat.getColumn());
-            ticket.setTicketCode(seat.getSeatCode());
-            ticket.setTicketName(seat.getSeatName());
-            ticket.setTicketStatus(seat.getSeatStatus());
+//            ticket.setTicketFloor(seat.getFloor());
+//            ticket.setTicketRow(seat.getRow());
+//            ticket.setTicketColumn(seat.getColumn());
+//            ticket.setTicketCode(seat.getSeatCode());
+//            ticket.setTicketName(seat.getSeatName());
+//            ticket.setTicketStatus(seat.getSeatStatus());
             tickets.add(ticket);
         }
         ticketRepository.saveAll(tickets);

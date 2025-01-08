@@ -1,8 +1,11 @@
 package com.bms.bms_server.modules.ModuleRoute.entity;
 
+import com.bms.bms_server.modules.ModuleAgent.entity.Agent;
 import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name = "route")
@@ -15,6 +18,7 @@ public class Route {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private Company company;
+
 
     @Column(name = "route_name")
     private String routeName;

@@ -1,5 +1,7 @@
 package com.bms.bms_server.modules.ModuleSeat.service;
 
+import com.bms.bms_server.exception.AppException;
+import com.bms.bms_server.exception.ErrorCode;
 import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import com.bms.bms_server.modules.ModuleSeat.dto.*;
 import com.bms.bms_server.modules.ModuleSeat.entity.Seat;
@@ -25,136 +27,120 @@ public class SeatingChartService {
     @Autowired
     SeatRepository seatRepository;
 
-    public DTO_RP_SeatingChart createSeatingChart(DTO_RQ_SeatingChart dto) {
-        try {
-            // Tìm công ty từ companyId
-            Company company = companyRepository.findById(dto.getCompanyId())
-                    .orElseThrow(() -> new RuntimeException("Company not found"));
-
-            // Chuyển DTO thành Entity bằng Mapper
-            SeatingChart seatingChart = SeatChartMapper.toEntity(dto, company);
-
-            // Liên kết từng seat với seatingChart
-//            seatingChart.getSeats().forEach(seat -> seat.setSeatingChart(seatingChart));
-
-            // Lưu seatingChart vào database (các seat cũng được lưu nhờ Cascade)
-            SeatingChart savedSeatingChart = seatingChartRepository.save(seatingChart);
-
-            // Chuyển đối tượng seatingChart đã lưu thành SeatingChartResponseDTO
-            return SeatChartMapper.toResponseDTO(savedSeatingChart);
-        } catch (Exception e) {
-            throw new RuntimeException("Error creating seating chart: " + e.getMessage());
+    // PB.06_US.01: Add new seating chart
+    public DTO_RP_SeatingChart addNewSeatingChart(DTO_RQ_CreateSeatChart dto) {
+        if (dto.getCompanyId() == null) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
+        if (dto.getName() == null || dto.getName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_NAME_SEAT_CHART);
+        }
+        Company company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+        boolean existsSeatChartName = seatingChartRepository.existsByCompanyAndSeatChartName(company, dto.getName());
+        if (existsSeatChartName) {
+            throw new AppException(ErrorCode.SEAT_CHART_ALREADY_EXISTED);
+        }
+        SeatingChart seatingChart = SeatChartMapper.toEntity(dto, company);
+        SeatingChart savedSeatingChart = seatingChartRepository.save(seatingChart);
+        return SeatChartMapper.toResponseDTO(savedSeatingChart);
     }
 
+    // PB.06_US.04: Filter/Get list seating chart
     public List<DTO_RP_SeatingChart> getListSeatChartByCompanyId(Long companyId) {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new RuntimeException("Company not found"));
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
 
-        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompany(company);
-
+        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompanyId(companyId);
         return seatingCharts.stream()
                 .map(SeatChartMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public void deleteSeatingChart(Long seatChartId) {
-        SeatingChart seatingChart = seatingChartRepository.findById(seatChartId)
-                .orElseThrow(() -> new RuntimeException("Seating chart not found"));
-        seatingChartRepository.delete(seatingChart);
-    }
-
+    // PB.06_US.02: Update seating chart
     @Transactional
-    public DTO_RP_SeatingChart updateSeatingChart(Long id, DTO_RQ_EditSeatChart updatedData) {
-        SeatingChart existingChart = seatingChartRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Seating Chart not found with id: " + id));
-
-        existingChart.setSeatingChartName(updatedData.getSeatingChartName());
-        existingChart.setTotalFloors(updatedData.getTotalFloors());
-        existingChart.setTotalRows(updatedData.getTotalRows());
-        existingChart.setTotalColumns(updatedData.getTotalColumns());
-
-        updateSeats(existingChart, updatedData.getSeats(), updatedData.getTotalFloors(), updatedData.getTotalRows(), updatedData.getTotalColumns());
+    public DTO_RP_SeatingChart updateSeatingChart(Long seatChartId, DTO_RQ_EditSeatChart dto) {
+        if (dto.getName() == null || dto.getName().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_NAME_SEAT_CHART);
+        }
+        SeatingChart existingChart = seatingChartRepository.findById(seatChartId)
+                        .orElseThrow(() -> new AppException(ErrorCode.SEAT_CHART_NOT_FOUND));
+        existingChart.setSeatChartName(dto.getName());
+        existingChart.setTotalFloor(dto.getFloor());
+        existingChart.setTotalRow(dto.getRow());
+        existingChart.setTotalColumn(dto.getColumn());
+        updateSeats(existingChart, dto.getSeats(), dto.getFloor(), dto.getRow(), dto.getColumn());
         seatingChartRepository.save(existingChart);
         return SeatChartMapper.toResponseDTO(existingChart);
     }
 
+    private void updateSeats(SeatingChart existingChart, List<DTO_RQ_EditSeat> seats, Integer floor, Integer row, Integer column) {
+        List<Seat> seatList = existingChart.getSeats();
+        Map<String, Seat> stringSeatMap = seatList.stream().collect(Collectors.toMap(Seat:: getSeatCode, Function.identity()));
 
+        Set<String> updateSeatCode = seats.stream().map(DTO_RQ_EditSeat::getCode).collect(Collectors.toSet());
 
-    private void updateSeats(SeatingChart seatingChart, List<DTO_RQ_EditSeat> updatedSeats, int totalFloors, int totalRows, int totalColumns) {
-        List<Seat> existingSeats = seatingChart.getSeats();
-        Map<String, Seat> seatCodeMap = existingSeats.stream()
-                .collect(Collectors.toMap(Seat::getSeatCode, Function.identity()));
-
-        // Tạo một danh sách các seatCode trong danh sách cập nhật
-        Set<String> updatedSeatCodes = updatedSeats.stream()
-                .map(DTO_RQ_EditSeat::getSeatCode)
-                .collect(Collectors.toSet());
-
-        // Lặp qua danh sách ghế mới để cập nhật hoặc thêm mới
-        for (DTO_RQ_EditSeat updatedSeat : updatedSeats) {
-            Seat seat = seatCodeMap.get(updatedSeat.getSeatCode());
-
+        for (DTO_RQ_EditSeat editSeat: seats) {
+            Seat seat = stringSeatMap.get(editSeat.getCode());
             if (seat != null) {
-                // Cập nhật ghế đã tồn tại
-                seat.setSeatName(updatedSeat.getSeatName());
-                seat.setSeatStatus(updatedSeat.getSeatStatus());
-                seat.setFloor(updatedSeat.getFloor());
-                seat.setRow(updatedSeat.getRow());
-                seat.setColumn(updatedSeat.getColumn());
+                seat.setSeatName(editSeat.getName());
+                seat.setSeatType(editSeat.getType());
+                seat.setSeatRow(editSeat.getRow());
+                seat.setSeatFloor(editSeat.getFloor());
+                seat.setSeatColumn(editSeat.getColumn());
             } else {
-                // Thêm ghế mới nếu không tồn tại
                 Seat newSeat = new Seat();
-                newSeat.setSeatCode(updatedSeat.getSeatCode());
-                newSeat.setSeatName(updatedSeat.getSeatName());
-                newSeat.setSeatStatus(updatedSeat.getSeatStatus());
-                newSeat.setFloor(updatedSeat.getFloor());
-                newSeat.setRow(updatedSeat.getRow());
-                newSeat.setColumn(updatedSeat.getColumn());
-//                newSeat.setSeatingChart(seatingChart);
-                seatingChart.getSeats().add(newSeat);
+                newSeat.setSeatCode(editSeat.getCode());
+                newSeat.setSeatName(editSeat.getName());
+                newSeat.setSeatColumn(editSeat.getColumn());
+                newSeat.setSeatRow(editSeat.getRow());
+                newSeat.setSeatFloor(editSeat.getFloor());
+                newSeat.setSeatType(editSeat.getType());
+                existingChart.getSeats().add(newSeat);
             }
         }
+        System.out.println("Floor: " + (floor));
+        System.out.println("Row: " + (row));
+        System.out.println("Column: " + (column));
 
-        // Xóa ghế cũ không có trong danh sách ghế mới và không thuộc vào tầng, hàng, cột hợp lệ
-        System.out.println("Floor: " + (totalFloors - 1));
-        System.out.println("Row: " + (totalRows - 1));
-        System.out.println("Column: " + (totalColumns - 1));
-
-
-        // Lọc ra các ghế cần xóa
-        List<Seat> seatsToDelete = existingSeats.stream()
+        List<Seat> seatsToDelete = seatList.stream()
                 .filter(seat ->
-                        !updatedSeatCodes.contains(seat.getSeatCode()) || // Không có trong danh sách cập nhật
-                                seat.getFloor() >= totalFloors ||                // Nằm ngoài tầng hợp lệ
-                                seat.getRow() >= totalRows ||                    // Nằm ngoài hàng hợp lệ
-                                seat.getColumn() >= totalColumns)                // Nằm ngoài cột hợp lệ
-                .collect(Collectors.toList());
-        // In ra danh sách ghế sẽ bị xóa
+                        !updateSeatCode.contains(seat.getSeatCode()) || seat.getSeatColumn() > column || seat.getSeatFloor() > floor || seat.getSeatRow() > row)
+                .toList();
+
         if (seatsToDelete.isEmpty()) {
             System.out.println("Không có ghế nào cần xóa.");
         } else {
             System.out.println("Ghế cần xoá:");
-            for (Seat seat : seatsToDelete) {
-                System.out.println("Seat Code: " + seat.getSeatCode() +
-                        ", Floor: " + seat.getFloor() +
-                        ", Row: " + seat.getRow() +
-                        ", ID: " + seat.getId() +
-                        ", Name: " + seat.getSeatName() +
-                        ", Column: " + seat.getColumn());
+            for (Seat seat: seatsToDelete) {
+                System.out.println("Seat code: " + seat.getSeatCode());
             }
-            // Xóa các ghế trong danh sách seatsToDelete khỏi danh sách existingSeats
-            seatingChart.getSeats().removeAll(seatsToDelete);
+            existingChart.getSeats().removeAll(seatsToDelete);
         }
+    }
 
-
+    public void removeSeatingChart(Long seatChartId) {
+        Optional<SeatingChart> seatingChartOptional = seatingChartRepository.findById(seatChartId);
+        if (seatingChartOptional.isEmpty()) {
+            throw new AppException(ErrorCode.SEAT_CHART_NOT_FOUND);
+        }
+        seatingChartRepository.deleteById(seatChartId);
     }
 
 
-    public List<DTO_RP_SeatingChartName> getListSeatingChartNameByCompanyId(Long companyId) {
-        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompanyId(companyId);
-        return seatingCharts.stream()
-                .map(SeatChartMapper::toResponseNameDTO)
-                .collect(Collectors.toList());
-    }
+//
+//    public List<DTO_RP_SeatingChartName> getListSeatingChartNameByCompanyId(Long companyId) {
+//        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompanyId(companyId);
+//        return seatingCharts.stream()
+//                .map(SeatChartMapper::toResponseNameDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    public DTO_RP_SeatingChart addNewSeatingChart(DTO_RQ_CreateSeatChart dto) {
+//        System.out.println(dto);
+//        return null;
+//    }
 }

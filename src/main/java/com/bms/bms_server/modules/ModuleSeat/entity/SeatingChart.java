@@ -2,35 +2,41 @@ package com.bms.bms_server.modules.ModuleSeat.entity;
 
 import com.bms.bms_server.modules.ModuleCompany.entity.Company;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "seating_chart")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SeatingChart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
-    private Company company;
+    Company company;
 
-    @Column(name = "chart_name", nullable = false)
-    private String seatingChartName;
+    @Column(name = "seat_chart_name")
+    String seatChartName;
 
-    @Column(name = "total_floors", nullable = false)
-    private Integer totalFloors;
+    @Column(name = "total_floor")
+    Integer totalFloor;
 
-    @Column(name = "total_rows", nullable = false)
-    private Integer totalRows;
+    @Column(name = "total_row")
+    Integer totalRow;
 
-    @Column(name = "total_columns", nullable = false)
-    private Integer totalColumns;
+    @Column(name = "total_column")
+    Integer totalColumn;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "seating_chart_id")
-    private List<Seat> seats;
+    List<Seat> seats;
 }

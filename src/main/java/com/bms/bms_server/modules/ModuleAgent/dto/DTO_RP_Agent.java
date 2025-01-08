@@ -7,6 +7,8 @@ import java.time.LocalDate;
 public class DTO_RP_Agent {
     private Long id;
     private String name;
+    private String username;
+    private Boolean status;
     private String code;
     private String phone;
     private String note;

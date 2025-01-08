@@ -50,7 +50,36 @@ public enum ErrorCode {
     ROUTE_ALREADY_EXISTED(403, "Tuyến đã tồn tại", HttpStatus.CONFLICT),
     ROUTE_NOT_FOUND(404, "Dữ liệu tuyến không tồn tại", HttpStatus.NOT_FOUND),
     ROUTE_ALREADY_AT_TOP(405, "Tuyến đường đã ở vị trí cao nhất, không thể di chuyển lên.", HttpStatus.BAD_REQUEST),
-    INCONSISTENT_DISPLAY_ORDER(406, "Thứ tự hiển thị của các tuyến đường không đồng bộ.", HttpStatus.CONFLICT);
+    INCONSISTENT_DISPLAY_ORDER(406, "Thứ tự hiển thị của các tuyến đường không đồng bộ.", HttpStatus.CONFLICT),
+
+    // PB.05: Agent
+    INVALID_NAME_AGENT(501, "Vui lòng cung cấp tên đại lý", HttpStatus.BAD_REQUEST),
+    AGENT_ALREADY_EXISTED(502, "Đại lý đã tồn tại", HttpStatus.CONFLICT),
+    AGENT_NOT_FOUND(503, "Dữ liệu đại lý không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_USERNAME_AGENT(504, "Vui lòng cung cấp tài khoản đại lý", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD_AGENT(505, "Vui lòng cung cấp mật khẩu đại lý", HttpStatus.BAD_REQUEST),
+    USERNAME_AGENT_ALREADY_EXISTED(506, "Tài khoản đại lý đã tồn tại", HttpStatus.CONFLICT),
+
+    // PB.06: Seat
+    INVALID_NAME_SEAT_CHART(601, "Vui lòng cung cấp tên sơ đồ", HttpStatus.BAD_REQUEST),
+    SEAT_CHART_ALREADY_EXISTED(602, "Sơ đồ đã tồn tại", HttpStatus.CONFLICT),
+    SEAT_CHART_NOT_FOUND(603, "Dữ liệu sơ đồ không tồn tại", HttpStatus.NOT_FOUND),
+
+    // PB.07: Trip
+
+    // PB.08: Auth
+
+    // PB.09: Cargo
+
+    // PB.10: Ticket
+
+    // PB.11: Acceptance
+
+    // PB.12: Point
+
+    // PB.13: Payment
+
+
     ;
 //        2xx: Thành công.
 //        3xx: Chuyển hướng.

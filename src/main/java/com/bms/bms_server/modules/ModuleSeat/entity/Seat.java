@@ -1,36 +1,37 @@
 package com.bms.bms_server.modules.ModuleSeat.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "seats")
+@Table(name = "seat")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
-    @Column(name = "seat_code", nullable = false)
-    private String seatCode;
+    @Column(name = "seat_code")
+    String seatCode;
 
-    @Column(name = "seat_name", nullable = false)
-    private String seatName;
+    @Column(name = "seat_name")
+    String seatName;
 
-    @Column(name = "seat_status", nullable = false)
-    private Boolean seatStatus;
+    @Column(name = "seat_type")
+    Integer seatType;
 
-    @Column(name = "seat_floor", nullable = false)
-    private Integer floor;
+    @Column(name = "seat_floor")
+    Integer seatFloor;
 
-    @Column(name = "seat_row", nullable = false)
-    private Integer row;
+    @Column(name = "seat_row")
+    Integer seatRow;
 
-    @Column(name = "seat_column", nullable = false)
-    private Integer column;
-
-//    @ManyToOne
-//    @JoinColumn(name = "seating_chart_id", referencedColumnName = "id")
-//    private SeatingChart seatingChart;
-
+    @Column(name = "seat_column")
+    Integer seatColumn;
 }

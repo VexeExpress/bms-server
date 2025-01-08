@@ -8,12 +8,9 @@ public class DTO_RP_Seat {
     private Integer floor;
     private Integer row;
     private Integer column;
-    private String seatCode;
-    private String seatName;
-    private Boolean seatStatus;
+    private String code;
+    private String name;
+    private Integer type;
 
-    public DTO_RP_Seat() {
-
-    }
 
 }

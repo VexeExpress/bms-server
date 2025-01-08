@@ -13,4 +13,6 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     List<Agent> findByCompanyId(Long companyId);
 
     boolean existsByCompanyAndName(Company company, String name);
+
+    boolean existsByCompanyAndUsername(Company company, String username);
 }

@@ -13,7 +13,7 @@ public class TripMapper {
         dto.setTimeDeparture(trip.getTimeDeparture());
         dto.setDateDeparture(trip.getDateDeparture());
         dto.setNote(trip.getNote());
-        dto.setSeatingChartName(trip.getSeatChart().getSeatingChartName());
+//        dto.setSeatingChartName(trip.getSeatChart().getSeatingChartName());
         dto.setLicensePlate(trip.getVehicle().getLicensePlate());
         List<String> driverNames = trip.getDrivers().stream()
                 .map(driver -> driver.getFullName())

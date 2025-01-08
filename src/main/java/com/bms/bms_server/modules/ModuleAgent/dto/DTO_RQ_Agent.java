@@ -5,6 +5,9 @@ import lombok.Data;
 @Data
 public class DTO_RQ_Agent {
     private String name;
+    private String username;
+    private String password;
+    private Boolean status;
     private String code;
     private String phone;
     private String note;
