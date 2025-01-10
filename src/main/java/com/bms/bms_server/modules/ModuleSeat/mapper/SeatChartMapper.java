@@ -58,6 +58,13 @@ public class SeatChartMapper {
         return dto;
     }
 
+    public static DTO_RP_SeatingChartName toSeatChartNameDTO(SeatingChart seatingChart) {
+        DTO_RP_SeatingChartName dto = new DTO_RP_SeatingChartName();
+        dto.setId(seatingChart.getId());
+        dto.setName(seatingChart.getSeatChartName());
+        return dto;
+    }
+
 
 //    public static DTO_RP_SeatingChart toResponseDTO(SeatingChart seatingChart) {
 //        DTO_RP_SeatingChart responseDTO = new DTO_RP_SeatingChart();

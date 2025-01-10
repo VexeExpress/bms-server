@@ -70,6 +70,18 @@ public class SeatingChartController {
                 .build();
     }
 
+    // PB.06_US.06: Filter/Get list seating chart name
+    @GetMapping("/list-chart-name/{companyId}")
+    @PreAuthorize("hasRole('ADMIN_APP') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    ApiResponse<List<DTO_RP_SeatingChartName>> getListSeatChartNameByCompanyId(@PathVariable Long companyId) {
+        var result = seatingChartService.getListSeatChartNameByCompanyId(companyId);
+        return ApiResponse.<List<DTO_RP_SeatingChartName>>builder()
+                .code(1000)
+                .message("Tải dữ liệu thành công")
+                .result(result)
+                .build();
+    }
+
 //    @PostMapping("/create")
 //    public ResponseEntity<DTO_RP_SeatingChart> createSeatingChart(@RequestBody DTO_RQ_CreateSeatChart seatingChart) {
 //        try {

@@ -1,24 +1,23 @@
 package com.bms.bms_server.modules.ModuleTrip.service;
 
-import com.bms.bms_server.modules.ModuleCompany.entity.Company;
+import com.bms.bms_server.exception.AppException;
+import com.bms.bms_server.exception.ErrorCode;
 import com.bms.bms_server.modules.ModuleCompany.repository.CompanyRepository;
 import com.bms.bms_server.modules.ModuleTicket.entity.Ticket;
 import com.bms.bms_server.modules.ModuleTicket.repository.TicketRepository;
-import com.bms.bms_server.modules.ModuleTrip.dto.DTO_RP_TripInfo;
-import com.bms.bms_server.modules.ModuleTrip.dto.DTO_RQ_Trip;
+import com.bms.bms_server.modules.ModuleTrip.dto.DTO_RP_TripData;
+import com.bms.bms_server.modules.ModuleTrip.entity.Schedule;
 import com.bms.bms_server.modules.ModuleTrip.mapper.TripMapper;
-import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import com.bms.bms_server.modules.ModuleEmployee.repository.EmployeeRepository;
-import com.bms.bms_server.modules.ModuleRoute.entity.Route;
 import com.bms.bms_server.modules.ModuleRoute.repository.RouteRepository;
 import com.bms.bms_server.modules.ModuleSeat.entity.Seat;
 import com.bms.bms_server.modules.ModuleSeat.entity.SeatingChart;
 import com.bms.bms_server.modules.ModuleSeat.repositoty.SeatingChartRepository;
 import com.bms.bms_server.modules.ModuleTrip.entity.Trip;
+import com.bms.bms_server.modules.ModuleTrip.repository.ScheduleRepository;
 import com.bms.bms_server.modules.ModuleTrip.repository.TripRepository;
-import com.bms.bms_server.modules.ModuleVehicle.entity.Vehicle;
 import com.bms.bms_server.modules.ModuleVehicle.repository.VehicleRepository;
-import jakarta.transaction.Transactional;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TripService {
     @Autowired
     TripRepository tripRepository;
@@ -43,64 +43,58 @@ public class TripService {
     SeatingChartRepository seatingChartRepository;
     @Autowired
     TicketRepository ticketRepository;
-    @Transactional
-    public DTO_RP_TripInfo createTrip(DTO_RQ_Trip tripRequestDTO) {
-        System.out.println(tripRequestDTO);
-        Company company = companyRepository.findById(tripRequestDTO.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found"));
-        Route route = routeRepository.findById(tripRequestDTO.getRouteId())
-                .orElseThrow(() -> new RuntimeException("Route not found"));
-        Vehicle vehicle = vehicleRepository.findById(tripRequestDTO.getVehicleId())
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-        SeatingChart seatingChart = seatingChartRepository.findById(tripRequestDTO.getSeatChartId())
-                .orElseThrow(() -> new RuntimeException("SeatChart not found"));
+    @Autowired
+    ScheduleRepository scheduleRepository;
 
-        List<Employee> drivers = employeeRepository.findAllById(tripRequestDTO.getDriverIds());
-        List<Employee> assistants = employeeRepository.findAllById(tripRequestDTO.getAssistantIds());
-
-        Trip trip = new Trip();
-        trip.setCompany(company);
-        trip.setRoute(route);
-        trip.setVehicle(vehicle);
-        trip.setSeatChart(seatingChart);
-        trip.setDrivers(drivers); // Thêm tài xế
-        trip.setAssistant(assistants); // Thêm phụ xe
-        trip.setTimeDeparture(tripRequestDTO.getTimeDeparture());
-        trip.setDateDeparture(tripRequestDTO.getDateDeparture());
-        trip.setNote(tripRequestDTO.getNote());
-
-
-        Trip savedTrip = tripRepository.save(trip);
-
-        List<Seat> seats = seatingChart.getSeats();
-        List<Ticket> tickets = new ArrayList<>();
-        for (Seat seat : seats) {
-            Ticket ticket = new Ticket();
-            ticket.setCompany(company);
-            ticket.setTrip(savedTrip);
-//            ticket.setTicketFloor(seat.getFloor());
-//            ticket.setTicketRow(seat.getRow());
-//            ticket.setTicketColumn(seat.getColumn());
-//            ticket.setTicketCode(seat.getSeatCode());
-//            ticket.setTicketName(seat.getSeatName());
-//            ticket.setTicketStatus(seat.getSeatStatus());
-            tickets.add(ticket);
+    public List<DTO_RP_TripData> getListDataTrip(Long companyId, Long routeId, LocalDate date) {
+        if (companyId == null) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
         }
-        ticketRepository.saveAll(tickets);
-        return TripMapper.toResponseDTO(savedTrip);
-    }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
 
+        System.out.println("CompanyID: " + companyId);
+        System.out.println("RouteID: " + routeId);
+        System.out.println("Select date: " + date);
 
+        List<Schedule> schedules = scheduleRepository.findByCompanyIdAndRouteIdAndDateStartLessThanEqualAndDateEndGreaterThanEqual(
+                companyId, routeId, date, date);
+        if (schedules.isEmpty()) {
+            System.out.println("Không tìm thấy lịch chạy");
 
-    public List<DTO_RP_TripInfo> getTripsByCompanyIdAndRouteIdAndDate(Long companyId, Long routeId, LocalDate dateDeparture) {
+        } else {
+            System.out.println("Tìm thấy lịch chạy");
+            System.out.println(schedules);
+        }
 
-        System.out.println("---------------------------");
-        System.out.println("Company ID: " + companyId);
-        System.out.println("Route ID: " + routeId);
-        System.out.println("Date Departure: " + dateDeparture);
+        List<Trip> trips = new ArrayList<>();
 
-        List<Trip> trips = tripRepository.findTripsByCompanyIdAndRouteIdAndDate(companyId, routeId, dateDeparture);
-        System.out.println("Retrieved Trips: " + trips);
+        for (Schedule schedule : schedules) {
+            Trip existingTrip = tripRepository.findByRouteIdAndDateDepartureAndTimeDeparture(routeId, date, schedule.getTime());
+            if (existingTrip == null) {
+                Trip newTrip = Trip.builder()
+                        .company(schedule.getCompany())
+                        .route(schedule.getRoute())
+                        .dateDeparture(date)
+                        .timeDeparture(schedule.getTime())
+                        .seatChart(schedule.getChart())
+                        .schedule(schedule)
+                        .build();
+
+                // Lưu trip trước khi tạo vé
+                try {
+                    newTrip = tripRepository.save(newTrip);
+                    createTicketsFromSeatingChart(newTrip);
+                    trips.add(newTrip);
+                    System.out.println("Đã tạo chuyến thành công: " + newTrip);
+                } catch (Exception e) {
+                    System.out.println("Lỗi khi tạo chuyến: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                trips.add(existingTrip);
+            }
+        }
 
         return trips.stream()
                 .map(TripMapper::toResponseDTO)
@@ -108,23 +102,94 @@ public class TripService {
     }
 
 
+    public void createTicketsFromSeatingChart(Trip trip) {
+        SeatingChart seatingChart = trip.getSchedule().getChart();
+        System.out.println("Value seat chart: " + seatingChart);
 
-    public void deleteTripById(Long tripId) {
-        System.out.println("Delete Trip ID: " + tripId);
-        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new RuntimeException("Trip not found"));
-
-        // Xóa vé của chuyến
-        List<Ticket> tickets = ticketRepository.findAllByTripId(tripId);
-        System.out.println("Danh sách vé cần xóa:");
-        for (Ticket ticket : tickets) {
-            System.out.println("Ticket ID: " + ticket.getId() +
-                    ", Code: " + ticket.getTicketCode() +
-                    ", Name: " + ticket.getTicketName() +
-                    ", Status: " + ticket.getTicketStatus());
+        if (seatingChart == null || seatingChart.getSeats() == null || seatingChart.getSeats().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_SEAT_CHART_ID);
         }
-        ticketRepository.deleteAll(tickets);
+        List<Ticket> tickets = new ArrayList<>();
 
+        for (Seat seat: seatingChart.getSeats()) {
+            Ticket ticket = Ticket.builder()
+                    .company(trip.getCompany())
+                    .trip(trip)
+                    .ticketCode(seat.getSeatCode())
+                    .ticketColumn(seat.getSeatColumn())
+                    .ticketFloor(seat.getSeatFloor())
+                    .ticketRow(seat.getSeatRow())
+                    .ticketName(seat.getSeatName())
+                    .ticketType(seat.getSeatType())
+                    .bookingStatus(false)
+                    .build();
+            tickets.add(ticket);
+        }
 
-        tripRepository.delete(trip);
+        try {
+            ticketRepository.saveAll(tickets);
+            System.out.println("Đã tạo vé thành công cho chuyến: " + trip.getId());
+        } catch (Exception e) {
+            System.out.println("Lỗi khi tạo vé: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+//        List<Seat> seats = seatingChart.getSeats();
+//        List<Ticket> tickets = new ArrayList<>();
+//        for (Seat seat : seats) {
+//            Ticket ticket = new Ticket();
+//            ticket.setCompany(company);
+//            ticket.setTrip(savedTrip);
+////            ticket.setTicketFloor(seat.getFloor());
+////            ticket.setTicketRow(seat.getRow());
+////            ticket.setTicketColumn(seat.getColumn());
+////            ticket.setTicketCode(seat.getSeatCode());
+////            ticket.setTicketName(seat.getSeatName());
+////            ticket.setTicketStatus(seat.getSeatStatus());
+//            tickets.add(ticket);
+//        }
+//        ticketRepository.saveAll(tickets);
+//        return TripMapper.toResponseDTO(savedTrip);
+//    }
+//
+//
+//
+//    public List<DTO_RP_TripInfo> getTripsByCompanyIdAndRouteIdAndDate(Long companyId, Long routeId, LocalDate dateDeparture) {
+//
+//        System.out.println("---------------------------");
+//        System.out.println("Company ID: " + companyId);
+//        System.out.println("Route ID: " + routeId);
+//        System.out.println("Date Departure: " + dateDeparture);
+//
+//        List<Trip> trips = tripRepository.findTripsByCompanyIdAndRouteIdAndDate(companyId, routeId, dateDeparture);
+//        System.out.println("Retrieved Trips: " + trips);
+//
+//        return trips.stream()
+//                .map(TripMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//
+//
+//    public void deleteTripById(Long tripId) {
+//        System.out.println("Delete Trip ID: " + tripId);
+//        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new RuntimeException("Trip not found"));
+//
+//        // Xóa vé của chuyến
+//        List<Ticket> tickets = ticketRepository.findAllByTripId(tripId);
+//        System.out.println("Danh sách vé cần xóa:");
+//        for (Ticket ticket : tickets) {
+//            System.out.println("Ticket ID: " + ticket.getId() +
+//                    ", Code: " + ticket.getTicketCode() +
+//                    ", Name: " + ticket.getTicketName() +
+//                    ", Status: " + ticket.getTicketStatus());
+//        }
+//        ticketRepository.deleteAll(tickets);
+//
+//
+//        tripRepository.delete(trip);
+//    }
+
+
 }

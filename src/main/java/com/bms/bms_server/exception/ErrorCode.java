@@ -51,6 +51,7 @@ public enum ErrorCode {
     ROUTE_NOT_FOUND(404, "Dữ liệu tuyến không tồn tại", HttpStatus.NOT_FOUND),
     ROUTE_ALREADY_AT_TOP(405, "Tuyến đường đã ở vị trí cao nhất, không thể di chuyển lên.", HttpStatus.BAD_REQUEST),
     INCONSISTENT_DISPLAY_ORDER(406, "Thứ tự hiển thị của các tuyến đường không đồng bộ.", HttpStatus.CONFLICT),
+    INVALID_ROUTE_ID(407, "Vui lòng cung cấp thông tin tuyến", HttpStatus.BAD_REQUEST),
 
     // PB.05: Agent
     INVALID_NAME_AGENT(501, "Vui lòng cung cấp tên đại lý", HttpStatus.BAD_REQUEST),
@@ -64,9 +65,12 @@ public enum ErrorCode {
     INVALID_NAME_SEAT_CHART(601, "Vui lòng cung cấp tên sơ đồ", HttpStatus.BAD_REQUEST),
     SEAT_CHART_ALREADY_EXISTED(602, "Sơ đồ đã tồn tại", HttpStatus.CONFLICT),
     SEAT_CHART_NOT_FOUND(603, "Dữ liệu sơ đồ không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_SEAT_CHART_ID(604, "Vui lòng cung cấp thông tin sơ đồ", HttpStatus.BAD_REQUEST),
 
     // PB.07: Trip
-
+    INVALID_DATE_START(701, "Vui lòng cung cấp ngày bắt đầu", HttpStatus.BAD_REQUEST),
+    INVALID_TIME_START(702, "Vui lòng cung cấp thời gian", HttpStatus.BAD_REQUEST),
+    TRIP_SCHEDULE_NOT_FOUND(703, "Dữ liệu lịch chạy không tồn tại", HttpStatus.NOT_FOUND),
     // PB.08: Auth
 
     // PB.09: Cargo

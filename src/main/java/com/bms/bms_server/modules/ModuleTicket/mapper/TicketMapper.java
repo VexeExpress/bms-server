@@ -12,7 +12,7 @@ public class TicketMapper {
         dto.setTicketFloor(ticket.getTicketFloor());
         dto.setTicketCode(ticket.getTicketCode());
         dto.setTicketName(ticket.getTicketName());
-        dto.setTicketStatus(ticket.getTicketStatus());
+
 
         dto.setTicketPhone(ticket.getTicketPhone());
         dto.setTicketPointUp(ticket.getTicketPointUp());

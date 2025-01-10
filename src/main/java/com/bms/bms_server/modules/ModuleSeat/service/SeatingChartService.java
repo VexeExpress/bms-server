@@ -122,12 +122,26 @@ public class SeatingChartService {
         }
     }
 
+    // PB.06_US.03: Remove seating chart
     public void removeSeatingChart(Long seatChartId) {
         Optional<SeatingChart> seatingChartOptional = seatingChartRepository.findById(seatChartId);
         if (seatingChartOptional.isEmpty()) {
             throw new AppException(ErrorCode.SEAT_CHART_NOT_FOUND);
         }
         seatingChartRepository.deleteById(seatChartId);
+    }
+
+    // PB.06_US.06: Filter/Get list seating chart name
+    public List<DTO_RP_SeatingChartName> getListSeatChartNameByCompanyId(Long companyId) {
+        if (companyId == null || companyId <= 0) {
+            throw new AppException(ErrorCode.INVALID_COMPANY_ID);
+        }
+        companyRepository.findById(companyId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_EXIST));
+        List<SeatingChart> seatingCharts = seatingChartRepository.findByCompanyId(companyId);
+        return seatingCharts.stream()
+                .map(SeatChartMapper::toSeatChartNameDTO)
+                .collect(Collectors.toList());
     }
 
 

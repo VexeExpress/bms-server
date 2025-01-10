@@ -36,7 +36,8 @@ public class SeatingChart {
     @Column(name = "total_column")
     Integer totalColumn;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "seating_chart_id")
     List<Seat> seats;
+
 }

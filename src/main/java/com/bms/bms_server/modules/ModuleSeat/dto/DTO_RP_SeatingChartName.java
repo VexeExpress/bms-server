@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class DTO_RP_SeatingChartName {
     private Long id;
-    private String seatingChartName;
+    private String name;
 }

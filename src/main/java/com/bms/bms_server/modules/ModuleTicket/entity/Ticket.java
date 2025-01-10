@@ -5,73 +5,78 @@ import com.bms.bms_server.modules.ModuleEmployee.entity.Employee;
 import com.bms.bms_server.modules.ModuleOffice.entity.Office;
 import com.bms.bms_server.modules.ModuleTrip.entity.Trip;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "ticket")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
-    private Company company;
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    Company company;
 
     @ManyToOne
-    @JoinColumn(name = "trip_id", referencedColumnName = "id", nullable = false)
-    private Trip trip;
+    @JoinColumn(name = "trip_id", referencedColumnName = "id")
+    Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = true)
-    private Employee employee;
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "office_id", referencedColumnName = "id", nullable = true)
-    private Office office;
+    @JoinColumn(name = "office_id", referencedColumnName = "id")
+    Office office;
 
-    @Column(name = "ticket_floor", nullable = false)
-    private Integer ticketFloor;
+    @Column(name = "ticket_floor")
+    Integer ticketFloor;
 
-    @Column(name = "ticket_row", nullable = false)
-    private Integer ticketRow;
+    @Column(name = "ticket_row")
+    Integer ticketRow;
 
-    @Column(name = "ticket_column", nullable = false)
-    private Integer ticketColumn;
+    @Column(name = "ticket_column")
+    Integer ticketColumn;
 
-    @Column(name = "ticket_code", nullable = false)
-    private String ticketCode;
+    @Column(name = "ticket_code")
+    String ticketCode;
 
-    @Column(name = "ticket_name", nullable = false)
-    private String ticketName;
+    @Column(name = "ticket_name")
+    String ticketName;
 
-    @Column(name = "ticket_status", nullable = false)
-    private Boolean ticketStatus;
+    @Column(name = "ticket_type")
+    Integer ticketType;
 
 //    Thông tin vé
     @Column(name = "ticket_phone")
-    private String ticketPhone;
+    String ticketPhone;
 
     @Column(name = "ticket_point_up")
-    private String ticketPointUp;
+    String ticketPointUp;
 
     @Column(name = "ticket_point_down")
-    private String ticketPointDown;
+    String ticketPointDown;
 
     @Column(name = "ticket_note")
-    private String ticketNote;
+    String ticketNote;
 
     @Column(name = "payment_type")
-    private Integer paymentType;
+    Integer paymentType;
 
     @Column(name = "customer_name")
-    private String customerName;
+    String customerName;
 
     @Column(name = "ticket_price")
-    private Double ticketPrice;
+    Double ticketPrice;
 
-    @Column(name = "booking_status", nullable = false)
-    private Boolean bookingStatus = false;
+    @Column(name = "booking_status")
+    Boolean bookingStatus;
 
 }

@@ -27,7 +27,7 @@ public class Agent {
     Company company;
 
     @Column(name = "route_ids")
-    private String routeIds;
+    String routeIds;
 
     @Column(name = "name")
     String name; // Tên đại lý
