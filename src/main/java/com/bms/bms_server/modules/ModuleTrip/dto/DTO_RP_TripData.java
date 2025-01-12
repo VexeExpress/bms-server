@@ -21,5 +21,6 @@ public class DTO_RP_TripData {
     Long vehicleId;
     String seatChartName;
     String licensePlate;
+    String routeName;
 
 }

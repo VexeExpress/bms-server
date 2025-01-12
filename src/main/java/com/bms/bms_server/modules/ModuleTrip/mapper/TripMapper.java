@@ -23,6 +23,7 @@ public class TripMapper {
             dto.setVehicleId(null);
             dto.setLicensePlate(null);
         }
+        dto.setRouteName(trip.getRoute().getRouteName());
 
 
         return dto;

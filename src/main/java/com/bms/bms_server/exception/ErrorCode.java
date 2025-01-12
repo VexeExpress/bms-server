@@ -70,7 +70,8 @@ public enum ErrorCode {
     // PB.07: Trip
     INVALID_DATE_START(701, "Vui lòng cung cấp ngày bắt đầu", HttpStatus.BAD_REQUEST),
     INVALID_TIME_START(702, "Vui lòng cung cấp thời gian", HttpStatus.BAD_REQUEST),
-    TRIP_SCHEDULE_NOT_FOUND(703, "Dữ liệu lịch chạy không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_TRIP_ID(703, "Vui lòng cung cấp dữ liệu chuyến", HttpStatus.BAD_REQUEST),
+    TRIP_SCHEDULE_NOT_FOUND(704, "Dữ liệu lịch chạy không tồn tại", HttpStatus.NOT_FOUND),
     // PB.08: Auth
 
     // PB.09: Cargo
